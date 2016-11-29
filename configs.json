@@ -3,12 +3,12 @@
   "DEBUG": true,
   "IGNORE_WECHAT_SIGNATURE": true,
   "WECHAT_TOKEN": "ThisIsAWeChatTokenWhichCanBeARandomString",
-  "WECHAT_APPID": "wxdabd06386fa2c4b6",
-  "WECHAT_SECRET": "9ee29a4a07f2700b9433f795ec33b008",
-  "DB_NAME": "wechatDB",
+  "WECHAT_APPID": "",
+  "WECHAT_SECRET": "",
+  "DB_NAME": "",
   "DB_USER": "root",
-  "DB_PASS": "525800",
+  "DB_PASS": "",
   "DB_HOST": "127.0.0.1",
   "DB_PORT": "3306",
-  "SITE_DOMAIN": "http://183.172.153.4"
+  "SITE_DOMAIN": "http://"
 }
