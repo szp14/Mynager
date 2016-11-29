@@ -1,0 +1,5 @@
+[{	
+	"model": "mynager.user",
+	"pk": 1,
+	"fields": {"open_id": "1", "student_id": ""}
+}]
