@@ -1,0 +1,105 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="utf-8">
+	<title>个人中心</title>
+	<link rel="stylesheet" href="base.css">
+	<script type="text/javascript" src="jquery-3.1.0.min.js"></script>
+</head>
+<body>
+<div id="container">
+	<div id="header">
+		<div class="header_left_item">回到主页</div>
+		<span>个人中心</span>
+		<div class="header_right_item">退出</div>
+		<div class="clear"></div>
+	</div>
+	<div class="section">
+		<img id="user_img" src="image.jpg">
+		<div id="user_name">姓名</div>
+		<div id="user_intro">个人介绍</div>
+		<div class="clear"></div>
+	</div>
+	<div class="section">
+		<div class="section_header">会议活动信息</div>
+		<div class="line">
+			<div class="line_member line_prompt">当前共1个已参加会议</div>
+			<div class="line_member">查看</div>
+			<div class="clear"></div>
+		</div>
+		<div class="line">
+			<div class="line_member line_prompt">当前共1个报名</div>
+			<div class="line_member">查看</div>
+			<div class="clear"></div>
+		</div>
+		<div class="line">
+			<div class="line_member line_prompt">当前共1个邀请</div>
+			<div class="line_member">查看</div>
+			<div class="clear"></div>
+		</div>
+		<div class="line">
+			<div class="line_member line_prompt">当前共1个通知</div>
+			<div class="line_member">查看</div>
+			<div class="clear"></div>
+		</div>
+	</div>
+	<div class="section">
+		<div class="section_header">设置个人信息</div>
+		<div class="line">
+			<div class="line_member">设置头像</div>
+			<input class="line_member" type="file" name="headimg"/>
+			<div class="clear"></div>
+		</div>
+		<div class="line">
+			<div class="line_member">设置名称</div>
+			<input class="line_member base_input long_input" type="text" name="set_name" onsubmit="" />
+			<div class="clear"></div>
+		</div>
+		<div class="line">
+			<div class="line_member">设置介绍</div>
+			<textarea class="line_member base_textarea" name="set_intro"></textarea>
+			<div class="clear"></div>
+		</div>
+		<input class="base_btn single_btn" type="button" value="保存更改" onclick=""/></br>
+	</div>
+	<div class="section">
+		<div class="section_header">设置账户信息</div>
+		<div class="line">
+			<div class="line_member">实名认证</div>
+			<div class="line_member">
+				<div class="subline">
+					<span class="subline_prompt">个人照片</span>
+					<input class="subline_file" type="file" name="headimg"/>
+				</div>
+				<div class="subline">
+					<span class="subline_prompt">身份证照片</span>
+					<input class="subline_file" type="file" name="headimg"/>
+				</div>
+			</div>
+			<input class="line_member base_btn" type="button" value="申请实名认证" onclick=""/></br>
+			<div class="clear"></div>
+		</div>
+		<div class="line">
+			<div class="line_member">修改密码</div>
+			<div class="line_member">
+				<div class="subline">
+					<span class="subline_prompt">旧密码</span>
+					<input class="base_input" type="password" name="set_name" onsubmit="" />
+				</div>
+				<div class="subline">
+					<span class="subline_prompt">新密码</span>
+					<input class="base_input" type="password" name="set_name" onsubmit="" />
+				</div>
+				<div class="subline">
+					<span class="subline_prompt">重复新密码</span>
+					<input class="base_input" type="password" name="set_name" onsubmit="" />
+				</div>
+			</div>
+			<input class="line_member base_btn" type="button" value="确认修改" onclick=""/></br>
+			<div class="clear"></div>
+		</div>
+	</div>
+</div>
+</body>
+
+</html>
