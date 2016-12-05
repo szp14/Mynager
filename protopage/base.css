@@ -204,7 +204,7 @@ a:hover{
 .homepage_intro{
 	margin-left:30px;
 	padding-top:30px;
-	min-height:300px;
+	min-height:200px;
 }
 .log_part{
 	width:600px;
@@ -217,4 +217,18 @@ a:hover{
 	border-color:#bbbbbb;
 	border-radius:0px;
 	text-align:center;
+}
+.hp_item{
+	width:960px;
+	height:50px;
+	padding-top:30px;
+	border-top-style:solid;
+	border-width:1px;
+	border-color:#bbbbbb;
+}
+.hp_item_intro{
+	width:600px;
+	float:left;
+	margin-left:20px;
+	font-size:14px;
 }
