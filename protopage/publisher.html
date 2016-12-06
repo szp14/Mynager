@@ -57,23 +57,43 @@
 		<div class="section_header">设置基本信息</div>
 		<div class="line">
 			<div class="line_member">设置图标</div>
-			<input class="line_member" type="file" name="headimg"/>
+			<input class="line_member" type="file" name=""/>
 			<div class="clear"></div>
 		</div>
 		<div class="line">
 			<div class="line_member">设置名称</div>
-			<input class="line_member base_input long_input" type="text" name="set_name"/>
+			<input class="line_member base_input long_input" type="text" name=""/>
+			<div class="clear"></div>
+		</div>
+		<div class="line">
+			<div class="line_member">设置邮箱</div>
+			<input class="line_member base_input long_input" type="text" name="" onsubmit="" />
 			<div class="clear"></div>
 		</div>
 		<div class="line">
 			<div class="line_member">设置简介</div>
-			<textarea class="line_member base_textarea" name="set_intro"></textarea>
+			<textarea class="line_member base_textarea" name=""></textarea>
 			<div class="clear"></div>
 		</div>
 		<input class="base_btn single_btn" type="button" value="保存更改" onclick=""/></br>
 	</div>
 	<div class="section">
 		<div class="section_header">设置账户信息</div>
+		<div class="line">
+			<div class="line_member">实名认证</div>
+			<div class="line_member">
+				<div class="subline">
+					<span class="subline_prompt">个人照片</span>
+					<input class="subline_file" type="file" name=""/>
+				</div>
+				<div class="subline">
+					<span class="subline_prompt">身份证照片</span>
+					<input class="subline_file" type="file" name=""/>
+				</div>
+			</div>
+			<input class="line_member base_btn" type="button" value="申请实名认证" onclick=""/></br>
+			<div class="clear"></div>
+		</div>
 		<div class="line">
 			<div class="line_member">修改密码</div>
 			<div class="line_member">
@@ -90,9 +110,9 @@
 					<input class="base_input" type="password" name="" onsubmit="" />
 				</div>
 			</div>
+			<input class="line_member base_btn" type="button" value="确认修改" onclick=""/></br>
 			<div class="clear"></div>
 		</div>
-		<input class="base_btn single_btn" type="button" value="确认修改" onclick=""/></br>
 	</div>
 </div>
 </body>
