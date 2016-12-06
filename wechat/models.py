@@ -2,8 +2,8 @@ from django.db import models
 from time import timezone
 from codex.baseerror import LogicError
 
-class Holder(models.Model):
-    holder_type = models.IntegerField()
+class Organizer(models.Model):
+    organizer_type = models.IntegerField()
     account_name = models.IntegerField(unique=True)
     account_password = models.CharField(max_length=128)
     description = models.TextField()
@@ -15,26 +15,25 @@ class Holder(models.Model):
     registered_time = models.DateTimeField()
 
     @classmethod
-    def create_new_holder(self, dic):
-        holder = Holder(account_name= dic['account_name'],
+    def create_new_organizer(self, dic):
+        organizer = Organizer(account_name= dic['account_name'],
                         account_password = dic['account_password'],
                         )
-        holder.registered_time = timezone.now()
-        holder.save()
+        organizer.registered_time = timezone.now()
+        organizer.save()
 
 
     def change_information(self, dic):
-        own_dic = {
-            'account_password' : self.account_password,
-            'description': self.description,
-            'email_address' : self.email_address,
-            'phone_num' : self.phone_num,
-            'pic_url' : self.pic_url,
-            'homepage_url' : self.homepage_url
-        }
-        for key in dic:
-            if key in own_dic:
-                own_dic[key] = dic[key]
+        own_keys = [
+            'account_password',
+            'description',
+            'email_address',
+            'phone_num',
+            'pic_url',
+            'homepage_url'
+        ]
+        for key in list(set(dic.keys()) & set(own_keys)):
+            self[key] = dic[key]
         self.save()
 
     HOLDER_COMPANY = 1
@@ -46,7 +45,7 @@ class Holder(models.Model):
 class Meeting(models.Model):
     meeting_type = models.CharField(max_length=128)
     name = models.CharField(max_length=128)
-    holder = models.ForeignKey(Holder)
+    organizer = models.ForeignKey(Organizer)
     max_people_num = models.IntegerField()
     phone_num = models.IntegerField()
     description = models.TextField()
@@ -56,44 +55,62 @@ class Meeting(models.Model):
     status = models.IntegerField()
     pic_url = models.CharField(max_length=256)
     homepage_url = models.CharField(max_length=256)
+    users_joined = models.ManyToManyField(User)
+    users_registered = models.ManyToManyField(User)
 
     @classmethod
     def create_new_meeting(self, dic):
-        meeting = Meeting(meeting_type = dic['meeting_type'],
-                          name = dic['name'],
-                          holder = dic['holder'],
-                          description = dic['description']
-                          )
+        meeting = Meeting()
+        own_keys = [
+            'meeting_type',
+            'name',
+            'organizer',
+            'max_people_num',
+            'phone_num',
+            'description',
+            'start_time',
+            'end_time',
+            'place',
+            'status',
+            'pic_url',
+            'homepage_url'
+        ]
+        for key in list(set(dic.keys()) & set(own_keys)):
+            meeting[key] = dic[key]
         meeting.save()
 
     def change_information(self, dic):
-        own_dic = {
-            'meeting_type': self.meeting_type,
-            'name': self.name,
-            'people_num': self.people_num,
-            'phone_num': self.phone_num,
-            'description': self.description,
-            'start_time': self.start_time,
-            'end_time': self.end_time,
-            'place': self.place,
-            'pic_url': self.pic_url,
-            'homepage_url': self.homepage_url
-        }
-        for key in dic:
-            if key in own_dic:
-                if key == 'start_time' and timezone.now() > own_dic[key]:
-                    raise LogicError("在活动开始后修改活动开始时间！")
-                if key == 'end_time' and timezone.now() > own_dic[key]:
-                    raise LogicError("在活动结束后修改活动开始时间！")
-                if key == 'name' and own_dic[key] != -1:
-                    raise LogicError("活动已经审核通过，无法修改活动名称！")
-                own_dic[key] = dic[key]
+        own_keys = [
+            'meeting_type',
+            'name',
+            'max_people_num',
+            'phone_num',
+            'description',
+            'start_time',
+            'end_time',
+            'place',
+            'pic_url',
+            'homepage_url'
+        ]
+        for key in list(set(dic.keys()) & set(own_keys)):
+            if key == 'start_time' and timezone.now() > self[key]:
+                raise LogicError("在活动开始后修改活动开始时间！")
+            if key == 'end_time' and timezone.now() > self[key]:
+                raise LogicError("在活动结束后修改活动开始时间！")
+            if key == 'name' and self['status'] > self.STATUS_PENDING:
+                raise LogicError("活动已经审核通过，无法修改活动名称！")
+            self[key] = dic[key]
         self.save()
 
+    STATUS_SAVING = -2
     STATUS_PENDING = -1
     STATUS_READY = 0
     STATUS_HOLD = 1
     STATUS_OVER = 2
+
+class Attachment(models.Model):
+    filename = models.CharField(max_length=128)
+    meeting = models.ForeignKey(Meeting)
 
 class User(models.Model):
     user_type = models.IntegerField()
@@ -105,7 +122,9 @@ class User(models.Model):
     pic_url = models.CharField(max_length=125)
     user_name = models.CharField()
     user_IDnum = models.IntegerField(unique=True)
-    meetings = models.ManyToManyField(Meeting)
+    meetings_joined = models.ManyToManyField(Meeting)
+    meetings_invited = models.ManyToManyField(Meeting)
+    meetings_registered = models.ManyToManyField(Meeting)
     registered_time = models.DateTimeField()
 
     @classmethod
@@ -117,17 +136,16 @@ class User(models.Model):
         user.save()
 
     def change_information(self, dic):
-        own_dic = {
-            'user_type' : self.user_type,
-            'account_password' : self.account_password,
-            'email_address' : self.email_address,
-            'phone_num' : self.phone_num,
-            'description' : self.description,
-            'pic_url' : self.pic_url,
-        }
-        for key in dic:
-            if key in own_dic:
-                own_dic[key] = dic[key]
+        own_keys = [
+            'user_type',
+            'account_password',
+            'email_address',
+            'phone_num',
+            'description',
+            'pic_url'
+        ]
+        for key in list(set(dic.keys()) & set(own_keys)):
+            self[key] = dic[key]
         self.save()
 
     USER_ADMIN = 1
