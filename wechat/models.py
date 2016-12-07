@@ -8,11 +8,11 @@ class MyUser(models.Model):
     open_id = models.CharField(max_length=64, unique=True, db_index=True)
     user_type = models.SmallIntegerField(default = 0)
     description = models.CharField(max_length=256)
-    phone_num = models.IntegerField(default = 0)
+    phone_num = models.CharField(max_length=32)
     pic_url = models.CharField(max_length=128)
     homepage_url = models.CharField(max_length=128)
     name = models.CharField(max_length=64)
-    user_IDnum = models.IntegerField(default = 0)
+    user_IDnum = models.CharField(max_length=32)
     registered_time = models.DateTimeField(null = True)
 
     @classmethod
@@ -50,7 +50,7 @@ class Meeting(models.Model):
     name = models.CharField(max_length=128)
     organizer = models.ForeignKey(MyUser)
     max_people_num = models.IntegerField(default = 0)
-    phone_num = models.IntegerField(default = 0)
+    phone_num = models.CharField(max_length=32)
     description = models.TextField()
     start_time = models.DateTimeField(null = True)
     end_time = models.DateTimeField(null = True)
