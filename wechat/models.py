@@ -1,52 +1,55 @@
 from django.db import models
 from time import timezone
 from codex.baseerror import LogicError
+from django.contrib.auth.models import User
 
-
-class Organizer(models.Model):
-    organizer_type = models.IntegerField()
-    account_name = models.CharField(unique=True, max_length=128)
-    account_password = models.CharField(max_length=128)
-    description = models.TextField()
-    email_address = models.CharField(max_length=128)
-    phone_num = models.IntegerField()
-    pic_url = models.CharField(max_length=128)
+class MyUser(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    open_id = models.CharField(max_length=64, unique=True, db_index=True)
+    user_type = models.IntegerField(default = 2)
+    description = models.CharField(max_length=256, default = '')
+    phone_num = models.IntegerField(default = 0)
+    pic_url = models.CharField(max_length=128, default = '')
     homepage_url = models.CharField(max_length=128)
-    name = models.CharField(max_length=128, db_index=True)
-    registered_time = models.DateTimeField()
+    name = models.CharField(max_length=64, default = '')
+    user_IDnum = models.IntegerField(unique=True)
+    registered_time = models.DateTimeField(null = True)
 
     @classmethod
-    def create_new_organizer(self, dic):
-        organizer = Organizer(account_name= dic['account_name'],
-                        account_password = dic['account_password'],
-                        )
-        organizer.registered_time = timezone.now()
-        organizer.save()
-
+    def create_new_user(cls, dic):
+        q = User.objects.create_user(dic["account_name"], '', dic['account_pass'])
+        q.save()
+        u = MyUser(user_type=dic["user_type"])
+        u.registered_time = timezone.now()
+        u.save()
 
     def change_information(self, dic):
         own_keys = [
-            'account_password',
-            'description',
-            'email_address',
+            'user_type',
             'phone_num',
+            'description',
             'pic_url',
-            'homepage_url'
+            'name',
+            'user_IDnum',
+            'homepage_url',
+            'open_id'
         ]
         for key in list(set(dic.keys()) & set(own_keys)):
             self[key] = dic[key]
+        if 'account_pass' in dic:
+            self.user.set_password(dic['account_pass'])
+        if 'email' in dic:
+            self.user.set_email(dic['email'])
         self.save()
 
-    HOLDER_COMPANY = 1
-    HOLDER_PERSON = 2
-    HOLDER_GROUP = 3
-    HOLDER_GOVERNMENT = 4
-    HOLDER_OTHERS = 0
+    USER_ADMIN = 2
+    USER_PARTICIPANTS = 1
+    USER_ORGANIZER = 0
 
 class Meeting(models.Model):
     meeting_type = models.CharField(max_length=128)
     name = models.CharField(max_length=128)
-    organizer = models.ForeignKey(Organizer)
+    organizer = models.ForeignKey(MyUser)
     max_people_num = models.IntegerField()
     phone_num = models.IntegerField()
     description = models.TextField()
@@ -60,12 +63,11 @@ class Meeting(models.Model):
     #users_registered = models.ManyToManyField(User)
 
     @classmethod
-    def create_new_meeting(self, dic):
+    def create_new_meeting(cls, dic):
         meeting = Meeting()
         own_keys = [
             'meeting_type',
             'name',
-            'organizer',
             'max_people_num',
             'phone_num',
             'description',
@@ -85,6 +87,7 @@ class Meeting(models.Model):
             'meeting_type',
             'name',
             'max_people_num',
+            'organizer',
             'phone_num',
             'description',
             'start_time',
@@ -112,44 +115,6 @@ class Meeting(models.Model):
 class Attachment(models.Model):
     filename = models.CharField(max_length=128)
     meeting = models.ForeignKey(Meeting)
-
-class User(models.Model):
-    open_id = models.CharField(max_length=64, unique=True, db_index=True)
-    user_type = models.IntegerField(default = 2)
-    account_name = models.CharField(unique=True, max_length=128)
-    account_password = models.CharField(max_length=128, default = '')
-    description = models.CharField(max_length=256, default = '')
-    email_address = models.CharField(max_length=128, default = '')
-    phone_num = models.IntegerField(default = 0)
-    pic_url = models.CharField(max_length=128, default = '')
-    user_name = models.CharField(max_length=64, default = '')
-    user_IDnum = models.IntegerField(unique=True)
-    registered_time = models.DateTimeField(null = True)
-
-    @classmethod
-    def create_new_user(self, dic):
-        user = User(account_name = dic['account_name'],
-                    account_password = dic['account_password'],
-                    )
-        user.registered_time = timezone.now()
-        user.save()
-
-    def change_information(self, dic):
-        own_keys = [
-            'user_type',
-            'account_password',
-            'email_address',
-            'phone_num',
-            'description',
-            'pic_url'
-        ]
-        for key in list(set(dic.keys()) & set(own_keys)):
-            self[key] = dic[key]
-        self.save()
-
-    USER_ADMIN = 1
-    USER_PARTICIPANTS = 2
-    USER_OTHERS = 0
 
 class Relation(models.Model):
     user = models.ForeignKey(User)
