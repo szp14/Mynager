@@ -2,8 +2,8 @@ from django.utils import timezone
 
 from wechat.wrapper import WeChatView, WeChatLib
 from wechat.handlers import *
-from wechat.models import Activity
-from WeChatTicket.settings import WECHAT_TOKEN, WECHAT_APPID, WECHAT_SECRET
+from wechat.models import Meeting
+from Mynager.settings import WECHAT_TOKEN, WECHAT_APPID, WECHAT_SECRET
 
 
 class CustomWeChatView(WeChatView):
@@ -11,15 +11,7 @@ class CustomWeChatView(WeChatView):
     lib = WeChatLib(WECHAT_TOKEN, WECHAT_APPID, WECHAT_SECRET)
 
     handlers = [
-        HelpOrSubscribeHandler,
-        UnbindOrUnsubscribeHandler,
-        BindAccountHandler,
-        BookEmptyHandler,
-        BookWhatHandler,
-        GetTicketHandler,
-        BookTicketHandler,
-        RefundHandler,
-        CalculationHandler,
+
     ]
     error_message_handler = ErrorHandler
     default_handler = DefaultHandler
@@ -105,19 +97,19 @@ class CustomWeChatView(WeChatView):
                     activity_ids.append(int(activity_id))
         return activity_ids
 
-    @classmethod
-    def update_menu(cls, activities=None):
-        """
-        :param activities: list of Activity
-        :return: None
-        """
-        if activities is not None:
-            if len(activities) > 5:
-                cls.logger.warn('Custom menu with %d activities, keep only 5', len(activities))
-            cls.update_book_button([{'id': act.id, 'name': act.name} for act in activities[:5]])
-        else:
-            activity_ids = cls.getActIdsInMenu()
-            return cls.update_menu(Activity.objects.filter(
-                id__in=activity_ids, status=Activity.STATUS_PUBLISHED, book_end__gt=timezone.now()
-            ).order_by('book_end')[: 5])
-        cls.lib.set_wechat_menu(cls.menu)
+    # @classmethod
+    # def update_menu(cls, activities=None):
+    #     """
+    #     :param activities: list of Activity
+    #     :return: None
+    #     """
+    #     if activities is not None:
+    #         if len(activities) > 5:
+    #             cls.logger.warn('Custom menu with %d activities, keep only 5', len(activities))
+    #         cls.update_book_button([{'id': act.id, 'name': act.name} for act in activities[:5]])
+    #     else:
+    #         activity_ids = cls.getActIdsInMenu()
+    #         return cls.update_menu(Activity.objects.filter(
+    #             id__in=activity_ids, status=Activity.STATUS_PUBLISHED, book_end__gt=timezone.now()
+    #         ).order_by('book_end')[: 5])
+    #     cls.lib.set_wechat_menu(cls.menu)

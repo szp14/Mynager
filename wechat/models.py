@@ -2,16 +2,17 @@ from django.db import models
 from time import timezone
 from codex.baseerror import LogicError
 
+
 class Organizer(models.Model):
     organizer_type = models.IntegerField()
-    account_name = models.IntegerField(unique=True)
+    account_name = models.CharField(unique=True, max_length=128)
     account_password = models.CharField(max_length=128)
     description = models.TextField()
     email_address = models.CharField(max_length=128)
     phone_num = models.IntegerField()
-    pic_url = models.CharField()
-    homepage_url = models.CharField()
-    name = models.CharField(max_length=128, unique=True)
+    pic_url = models.CharField(max_length=128)
+    homepage_url = models.CharField(max_length=128)
+    name = models.CharField(max_length=128, db_index=True)
     registered_time = models.DateTimeField()
 
     @classmethod
@@ -55,8 +56,8 @@ class Meeting(models.Model):
     status = models.IntegerField()
     pic_url = models.CharField(max_length=256)
     homepage_url = models.CharField(max_length=256)
-    users_joined = models.ManyToManyField(User)
-    users_registered = models.ManyToManyField(User)
+    #users_joined = models.ManyToManyField(User)
+    #users_registered = models.ManyToManyField(User)
 
     @classmethod
     def create_new_meeting(self, dic):
@@ -114,19 +115,16 @@ class Attachment(models.Model):
 
 class User(models.Model):
     open_id = models.CharField(max_length=64, unique=True, db_index=True)
-    user_type = models.IntegerField()
-    account_name = models.IntegerField(unique=True)
-    account_password = models.CharField(max_length=128)
-    description = models.CharField(max_length=256)
-    email_address = models.CharField(max_length=128, unique=True)
-    phone_num = models.IntegerField(unique=True)
-    pic_url = models.CharField(max_length=125)
-    user_name = models.CharField()
+    user_type = models.IntegerField(default = 2)
+    account_name = models.CharField(unique=True, max_length=128)
+    account_password = models.CharField(max_length=128, default = '')
+    description = models.CharField(max_length=256, default = '')
+    email_address = models.CharField(max_length=128, default = '')
+    phone_num = models.IntegerField(default = 0)
+    pic_url = models.CharField(max_length=128, default = '')
+    user_name = models.CharField(max_length=64, default = '')
     user_IDnum = models.IntegerField(unique=True)
-    meetings_joined = models.ManyToManyField(Meeting)
-    meetings_invited = models.ManyToManyField(Meeting)
-    meetings_registered = models.ManyToManyField(Meeting)
-    registered_time = models.DateTimeField()
+    registered_time = models.DateTimeField(null = True)
 
     @classmethod
     def create_new_user(self, dic):
@@ -153,3 +151,11 @@ class User(models.Model):
     USER_PARTICIPANTS = 2
     USER_OTHERS = 0
 
+class Relation(models.Model):
+    user = models.ForeignKey(User)
+    meeting = models.ForeignKey(Meeting)
+    status = models.IntegerField()
+
+    STATUS_JOINED = 0
+    STATUS_SIGNUP = 1
+    STATUS_INVITED = 2
