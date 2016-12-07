@@ -12,7 +12,7 @@ from django.template.loader import get_template
 
 from Mynager import settings
 from codex.baseview import BaseView
-from wechat.models import User, MyUser
+from wechat.models import User
 from Mynager.settings import SITE_DOMAIN, WECHAT_TOKEN, WECHAT_APPID, WECHAT_SECRET
 
 
@@ -211,8 +211,7 @@ class WeChatView(BaseView):
         msg = self.parse_msg_xml(ET.fromstring(self.request.body))
         if 'FromUserName' not in msg:
             return self.error_message_handler(self, msg, None).handle()
-        djangoUser = User.objects.create_user(msg['FromUserName'], '', '')
-        user, created = MyUser.objects.get_or_create(open_id=msg['FromUserName'], user = djangoUser)
+        user, created = User.objects.get_or_create(open_id=msg['FromUserName'])
         if created:
             self.logger.info('New user: %s', user.open_id)
         try:

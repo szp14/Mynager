@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from operator import indexOf
 from django.utils import timezone
 from Mynager.settings import MEDIA_ROOT, SITE_DOMAIN
-from wechat.models import Organizer, Meeting, User, Attachment
+from wechat.models import Meeting, MyUser, Attachment
 # Create your views here.
 
 class AdminPageView(APIView):

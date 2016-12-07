@@ -1,6 +1,6 @@
 from codex.baseerror import *
 from codex.baseview import APIView
-from wechat.models import User, Organizer, Meeting, Attachment, Relation
+from wechat.models import MyUser, Meeting, Attachment
 import urllib
 from urllib import request
 from django.contrib.auth.decorators import login_required
@@ -9,24 +9,77 @@ from django.contrib.auth import authenticate, login, logout
 class HomePageView(APIView):
     @login_required
     def registerMeeting(self):
-        self.check_input('id', 'meetingid')
-        user = User.objects.get(id=self.input['id'])
-        meeting = Meeting.objects.get(id=self.input['meetingid'])
-        relation = Relation(user = user, meeting = meeting, status = Relation.STATUS_SIGNUP)
-        relation.save()
+        self.check_input('id', 'meeting_id')
+        user = MyUser.objects.get(id=self.input['id'])
+        meeting = Meeting.objects.get(id=self.input['meeting_id'])
+        meeting.users_registered.add(user)
+        user.meetings_registered.add(meeting)
+
+class MeetingListView(APIView):
+    def get(self):
+        meetings = Meeting.objects.filter(status__gt=0)
+        return [
+            {
+                "meeting_type": meet0.meeting_type,
+                "name": meet0.name,
+                "organizer": meet0.organizer.name,
+                "pic_url": meet0.pic_url,
+                "start_time": meet0.start_time,
+                "place": meet0.place,
+            } for meet0 in meetings
+        ]
+
+
+class MeetingDetailView(APIView):
+    @login_required
+    def get(self):
+        self.check_input("meeting_id")
+        meeting0 = Meeting.objects.get(id = self.input["meeting_id"])
+        if meeting0.status < 0:
+            raise LogicError("该会议还未处于发布状态，您无法查看该会议的信息！")
+        return {
+            "meeting_type": meeting0.meeting_type,
+            "name": meeting0.name,
+            "organizer": meeting0.organizer.name,
+            "max_people_num": meeting0.max_people_num,
+            "phone_num": meeting0.phone_num,
+            "description": meeting0.description,
+            "start_time": meeting0.start_time,
+            "end_time": meeting0.end_time,
+            "place": meeting0.place,
+            "status": meeting0.status,
+            "pic_url": meeting0.pic_url,
+            "homepage_url": meeting0.homepage_url,
+        }
+
+    @login_required
+    def post(self):
+        if request.user.account_name:
+            self.check_input("meeting_id")
+            meeting0 = Meeting.objects.get(id = self.input["meeting_id"])
+            meeting0.change_information(self.input)
+
+class MeetingCreateView(APIView):
+    @login_required
+    def post(self):
+        if request.user.myuser.user_type > 0:
+            raise InputError("您没有权限创建会议！")
+        self.input["organizer"] = self.user.myuser
+        Meeting.create_new_meeting(self.input)
+
+    @login_required
+    def get(self):
+        self.check_input("meeting_id")
+        if request.user.myuser.user_type < 2:
+            raise InputError("您没有权限删除该会议！")
+        meeting0 = Meeting.objects.get(id = self.input["meeting_id"])
+        meeting0.delete()
 
 class RegisterView(APIView):
-    def regisOrganizer(self):
-        self.check_input('account_name',
-                         'account_password',
-                         )
-        Organizer.create_new_holder(self.input)
+    def post(self):
+        self.check_input('user_type', 'account_name', 'account_pass')
+        MyUser.create_new_user(self.input)
 
-    def regisUser(self):
-        self.check_input('account_name',
-                         'account_password',
-                         )
-        User.create_new_user(self.input)
 
 class LogInView(APIView):
     def get(self):
@@ -46,52 +99,62 @@ class LogInView(APIView):
             raise InputError('Fail to log in')
 
 class LogOutView(APIView):
-    def post(self):
+    @login_required
+    def get(self):
         logout(self.request)
 
 class UserCenterView(APIView):
     @login_required
     def modInfo(self):
         self.check_input('id')
-        User.objects.get(id = self.input['id']).change_information(self.input)
+        MyUser.objects.get(id = self.input['id']).change_information(self.input)
 
     @login_required
     def lookupJoined(self):
         self.check_input('id')
-        user = User.objects.get(id = self.input['id'])
-        return [r.meeting for r in Relation.objects.filter(user = user, status = Relation.STATUS_JOINED)]
+        user = MyUser.objects.get(id = self.input['id'])
+        return list(user.meetings_joined)
 
     @login_required
     def lookupInvited(self):
         self.check_input('id')
-        user = User.objects.get(id = self.input['id'])
-        return [r.meeting for r in Relation.objects.filter(user = user, status = Relation.STATUS_INVITED)]
+        user = MyUser.objects.get(id = self.input['id'])
+        return list(user.meetings_invited)
 
     @login_required
-    def lookupSignUp(self):
+    def lookupRegistered(self):
         self.check_input('id')
-        user = User.objects.get(id = self.input['id'])
-        return [r.meeting for r in Relation.objects.filter(user=user, status=Relation.STATUS_SIGNUP)]
+        user = MyUser.objects.get(id = self.input['id'])
+        return list(user.meetings_registered)
+
 
 class OrganizerCenterView(APIView):
     @login_required
     def modInfo(self):
         self.check_input('id')
-        Organizer.objects.get(id = self.input['id']).change_information(self.input)
+        MyUser.objects.get(id = self.input['id']).change_information(self.input)
 
 class ParticipantManageView(APIView):
     @login_required
     def lookupParticipant(self):
         self.check_input('id')
         meeting = Meeting.objects.get(id = self.input['id'])
-        return [r.user for r in Relation.objects.filter(meeting=meeting, status=Relation.STATUS_JOINED)]
+        return list(meeting.users_joined)
 
     @login_required
     def removeParticipant(self):
         self.check_input('id', 'userid')
         meeting = Meeting.objects.get(id=self.input['id'])
-        user = User.objects.get(id=self.input['userid'])
-        Relation.objects.get(user = user, meeting = meeting).delete()
+        user = MyUser.objects.get(id=self.input['userid'])
+        meeting.users_joined.remove(user)
+        if meeting in user.meetings_invited:
+            user.meetings_invited.remove(meeting)
+        elif meeting in user.meetings_joined:
+            user.meetings_joined.remove(meeting)
+        elif meeting in user.meetings_registered:
+            user.meetings_registered.remove(meeting)
+        user.save()
+        meeting.save()
 
     @login_required
     def sendNotice(self):
@@ -101,32 +164,39 @@ class ParticipantManageView(APIView):
     def sendInvitation(self):
         self.check_input('id', 'userid')
         meeting = Meeting.objects.get(id=self.input['id'])
-        user = User.objects.get(id=self.input['userid'])
-        relation = Relation(user = user, meeting = meeting, status = Relation.STATUS_INVITED)
-        relation.save()
+        user = MyUser.objects.get(id=self.input['userid'])
+        meeting.users_joined.add(user)
+        user.meetings_invited.add(meeting)
+        meeting.save()
+        user.save()
         #sendWechatInfo
 
     @login_required
-    def lookupSignUp(self):
+    def lookupRegister(self):
         self.check_input('id')
         meeting = Meeting.objects.get(id=self.input['id'])
-        return [r.user for r in Relation.objects.filter(meeting=meeting, status=Relation.STATUS_SIGNUP)]
+        return list(meeting.users_registered)
 
     @login_required
-    def acptSignUp(self):
+    def acptRegister(self):
         self.check_input('id', 'userid')
         meeting = Meeting.objects.get(id=self.input['id'])
-        user = User.objects.get(id=self.input['userid'])
-        relation = Relation(user=user, meeting=meeting, status=Relation.STATUS_JOINED)
-        relation.save()
+        user = MyUser.objects.get(id=self.input['userid'])
+        meeting.users_joined.add(user)
+        user.meetings_joined.add(meeting)
+        meeting.save()
+        user.save()
         # sendWechatInfo
 
     @login_required
-    def rjctSignUp(self):
+    def rjctRegister(self):
         self.check_input('id', 'userid')
         meeting = Meeting.objects.get(id=self.input['id'])
-        user = User.objects.get(id=self.input['userid'])
-        Relation.objects.get(user=user, meeting=meeting).delete()
+        user = MyUser.objects.get(id=self.input['userid'])
+        meeting.users_registered.remove(user)
+        user.meetings_registered.remove(meeting)
+        meeting.save()
+        user.save()
         # sendWechatInfo
 
 class CreateMeetingView(APIView):

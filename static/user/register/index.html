@@ -1,0 +1,70 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="utf-8">
+	<title>注册</title>
+</head>
+<script type="text/javascript" src="/3rd/swig.js"></script>
+<body>
+<div id="container">
+	<div id="header">
+		<div class="header_left_item">回到主页</div>
+		<span>注册</span>
+		<div class="clear"></div>
+	</div>
+	<div class="log_part">
+		<h4>注册</h4></br></br>
+		<div class="subline">
+			<span class="subline_prompt">用户名</span>
+			<input id="account_name" class="base_input" type="text" name="" onsubmit="" />
+		</div>
+		<div class="subline">
+			<span class="subline_prompt">密码</span>
+			<input class="base_input" id="pass" type="password" name="" onsubmit="" />
+		</div>
+		<div class="subline">
+			<span class="subline_prompt">重复密码</span>
+			<input class="base_input" id="repass" type="password" name="" onsubmit="" />
+		</div></br>
+		<form id="tpl-form">
+            {% if cooy == true %}
+			<input type="radio" id="check1" checked="checked" name="type" value="0" />注册成为发布方
+			<input type="radio" id="check2" checked="checked" name="type" value="1" />注册成为参与者
+            {% endif %}
+		</form></br></br>
+		<input class="base_btn" type="button" value="注册" onclick="register()"/>
+		<div class="clear"></div>
+	</div>
+	
+</div>
+</body>
+<link rel="stylesheet" href="/css/base.css">
+<script type="text/javascript" src="/3rd/jquery.js"></script>
+<script type="text/javascript" src="/js/basicapi.js"></script>
+<script>
+    var cooy = true;
+    $('#tpl-form').html(swig.render($('#tpl-form').html(), {cooy : cooy}));
+    function register() {
+        var pass1 = $("#pass").val(), pass2 = $("#repass").val();
+        if(pass1 != pass2) {
+            alert("您两次输入的密码不相同，请重新输入！");
+            return;
+        }
+        var radios = $("[name='type']");
+        var user_type;
+        if(radios[0].checked)
+            user_type = 2;
+        else
+            user_type = 1;
+        var dic1 = {
+            "account_name": $("#account_name").val(),
+            "account_pass": pass1,
+            "user_type": user_type
+        };
+        api.post('/api/u/register', dic1, function() {
+            alert("注册成功，即将跳转到主界面！");
+            window.location.href = "/user/homepage";
+        }, dftFail);
+    }
+</script>
+</html>
