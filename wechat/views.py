@@ -11,18 +11,19 @@ class CustomWeChatView(WeChatView):
     lib = WeChatLib(WECHAT_TOKEN, WECHAT_APPID, WECHAT_SECRET)
 
     handlers = [
-
+        UnbindOrUnsubscribeHandler,
+        BindAccountHandler,
+        GetMeetingHandler,
     ]
     error_message_handler = ErrorHandler
     default_handler = DefaultHandler
 
     event_keys = {
-        'book_what': 'SERVICE_BOOK_WHAT',
-        'get_ticket': 'SERVICE_GET_TICKET',
+        'get_meeting': 'SERVICE_GET_MEETING',
         'account_bind': 'SERVICE_BIND',
         'help': 'SERVICE_HELP',
-        'book_empty': 'BOOKING_EMPTY',
-        'book_header': 'BOOKING_ACTIVITY_',
+        'meeting_empty': 'MEETING_EMPTY',
+        'meeting_header': 'MEETING_HEADER'
     }
 
     menu = {
@@ -30,16 +31,6 @@ class CustomWeChatView(WeChatView):
             {
                 "name": "服务",
                 "sub_button": [
-                    {
-                        "type": "click",
-                        "name": "抢啥",
-                        "key": event_keys['book_what'],
-                    },
-                    {
-                        "type": "click",
-                        "name": "查票",
-                        "key": event_keys['get_ticket'],
-                    },
                     {
                         "type": "click",
                         "name": "绑定",
@@ -53,63 +44,63 @@ class CustomWeChatView(WeChatView):
                 ]
             },
             {
-                "name": "抢票",
+                "name": "我的会议",
                 "sub_button": []
             }
         ]
     }
 
     @classmethod
-    def get_book_btn(cls):
+    def get_meeting_btn(cls):
         return cls.menu['button'][-1]
 
     @classmethod
-    def update_book_button(cls, activities):
-        book_btn = cls.get_book_btn()
-        if len(activities) == 0:
+    def update_meeting_button(cls, meetings):
+        book_btn = cls.get_meeting_btn()
+        if len(meetings) == 0:
             book_btn['type'] = 'click'
-            book_btn['key'] = cls.event_keys['book_empty']
+            book_btn['key'] = cls.event_keys['meeting_empty']
         else:
             book_btn.pop('type', None)
             book_btn.pop('key', None)
         book_btn['sub_button'] = list()
-        for act in activities:
+        for met in meetings:
             book_btn['sub_button'].append({
                 'type': 'click',
-                'name': act['name'],
-                'key': cls.event_keys['book_header'] + str(act['id']),
+                'name': met['name'],
+                'key': cls.event_keys['meeting_header'] + str(met['id']),
             })
 
     @classmethod
-    def getActIdsInMenu(cls):
+    def getMetIdsInMenu(cls):
         current_menu = cls.lib.get_wechat_menu()
         existed_buttons = list()
         for btn in current_menu:
-            if btn['name'] == '抢票':
+            if btn['name'] == '我的会议':
                 existed_buttons += btn.get('sub_button', list())
-        activity_ids = list()
+        meeting_ids = list()
         for btn in existed_buttons:
             if 'key' in btn:
-                activity_id = btn['key']
-                if activity_id.startswith(cls.event_keys['book_header']):
-                    activity_id = activity_id[len(cls.event_keys['book_header']):]
-                if activity_id and activity_id.isdigit():
-                    activity_ids.append(int(activity_id))
-        return activity_ids
+                meeting_id = btn['key']
+                if meeting_id.startswith(cls.event_keys['meeting_header']):
+                    meeting_id = meeting_id[len(cls.event_keys['meeting_header']):]
+                if meeting_id and meeting_id.isdigit():
+                    meeting_ids.append(int(meeting_id))
+        return meeting_ids
 
-    # @classmethod
-    # def update_menu(cls, activities=None):
-    #     """
-    #     :param activities: list of Activity
-    #     :return: None
-    #     """
-    #     if activities is not None:
-    #         if len(activities) > 5:
-    #             cls.logger.warn('Custom menu with %d activities, keep only 5', len(activities))
-    #         cls.update_book_button([{'id': act.id, 'name': act.name} for act in activities[:5]])
-    #     else:
-    #         activity_ids = cls.getActIdsInMenu()
-    #         return cls.update_menu(Activity.objects.filter(
-    #             id__in=activity_ids, status=Activity.STATUS_PUBLISHED, book_end__gt=timezone.now()
-    #         ).order_by('book_end')[: 5])
-    #     cls.lib.set_wechat_menu(cls.menu)
+    @classmethod
+    def update_menu(cls, meetings=None):
+        """
+        :param activities: list of Activity
+        :return: None
+        """
+        if meetings is not None:
+            if len(meetings) > 5:
+                cls.logger.warn('Custom menu with %d activities, keep only 5', len(meetings))
+            cls.update_meeting_button([{'id': met.id, 'name': met.name} for met in meetings[:5]])
+        else:
+            meeting_ids = cls.getMetIdsInMenu()
+            return cls.update_menu(Meeting.objects.filter(
+                id__in = meeting_ids, status = Meeting.STATUS_HOLD, end_time__gt=timezone.now()
+            ).order_by('end_time')[: 5])
+        cls.lib.set_wechat_menu(cls.menu)

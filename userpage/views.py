@@ -130,7 +130,7 @@ class ParticipantManageView(APIView):
         # sendWechatInfo
 
 class CreateMeetingView(APIView):
-    @login_requiredw
+    @login_required
     def tempSave(self):
         self.input['status'] = Meeting.STATUS_SAVING
         Meeting.create_new_meeting(self.input)

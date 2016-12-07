@@ -6,10 +6,10 @@ from django.utils import timezone
 from django.core.management.base import BaseCommand, CommandError
 
 from wechat.views import CustomWeChatView
-from wechat.models import Activity
+from wechat.models import Meeting
 
 
-__author__ = "Epsirom"
+__author__ = "xyzS"
 
 
 class Command(BaseCommand):
@@ -23,13 +23,13 @@ class Command(BaseCommand):
 
         existed_buttons = list()
         for btn in current_menu:
-            if btn['name'] == '抢票':
+            if btn['name'] == '我的会议':
                 existed_buttons += btn.get('sub_button', list())
 
         self.logger.info('Got %d activities', len(existed_buttons))
         self.logger.info('=' * 32)
-        for idx, act in enumerate(existed_buttons):
-            self.logger.info('%d. %s (%s)', idx, act.get('name', ''), act.get('key', ''))
+        for idx, met in enumerate(existed_buttons):
+            self.logger.info('%d. %s (%s)', idx, met.get('name', ''), met.get('key', ''))
 
 
 Command.logger.setLevel(logging.DEBUG)

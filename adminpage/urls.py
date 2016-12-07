@@ -5,7 +5,7 @@ from django.conf.urls import url
 from adminpage.views import *
 
 
-__author__ = "Epsirom"
+__author__ = "xyzS"
 
 
 urlpatterns = [

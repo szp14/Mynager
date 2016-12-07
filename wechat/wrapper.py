@@ -16,7 +16,7 @@ from wechat.models import User
 from Mynager.settings import SITE_DOMAIN, WECHAT_TOKEN, WECHAT_APPID, WECHAT_SECRET
 
 
-__author__ = "Epsirom"
+__author__ = "xyzS"
 
 
 class WeChatHandler(object):

@@ -5,9 +5,9 @@
   "WECHAT_TOKEN": "ThisIsAWeChatTokenWhichCanBeARandomString",
   "WECHAT_APPID": "",
   "WECHAT_SECRET": "",
-  "DB_NAME": "",
+  "DB_NAME": "mynagerDB",
   "DB_USER": "root",
-  "DB_PASS": "",
+  "DB_PASS": "525800",
   "DB_HOST": "127.0.0.1",
   "DB_PORT": "3306",
   "SITE_DOMAIN": "http://"
