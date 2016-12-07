@@ -113,6 +113,7 @@ class Attachment(models.Model):
     meeting = models.ForeignKey(Meeting)
 
 class User(models.Model):
+    open_id = models.CharField(max_length=64, unique=True, db_index=True)
     user_type = models.IntegerField()
     account_name = models.IntegerField(unique=True)
     account_password = models.CharField(max_length=128)

@@ -15,10 +15,14 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
-
+from wechat.views import CustomWeChatView
 from Mynager.views import StaticFileView
 
 
 urlpatterns = [
+    url(r'^wechat/?$', CustomWeChatView.as_view()),
+    url(r'^admin/', admin.site.urls),
+    url(r'^api/u/', include('userpage.urls')),
+    url(r'^a/', include('adminpage.urls')),
     url(r'^', StaticFileView.as_view()),
 ]

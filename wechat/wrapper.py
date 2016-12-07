@@ -10,9 +10,10 @@ import xml.etree.ElementTree as ET
 from django.http import Http404, HttpResponse
 from django.template.loader import get_template
 
-from WeChatTicket import settings
+from Mynager import settings
 from codex.baseview import BaseView
 from wechat.models import User
+from Mynager.settings import SITE_DOMAIN, WECHAT_TOKEN, WECHAT_APPID, WECHAT_SECRET
 
 
 __author__ = "Epsirom"
@@ -230,3 +231,32 @@ class WeChatView(BaseView):
             for child in root_elem:
                 msg[child.tag] = child.text
         return msg
+
+def createNotice(users, actId, actName, actHour, actMinute):
+    for user in users:
+        jsonPacket = {
+            'touser': user.open_id,
+            'template_id': 'gG9VdGmd1pj83VMGkBHnPZscG7OcyBJzXDOg3Engl-s',
+            'topcolor': '#FF0000',
+            'url': SITE_DOMAIN + '/u/activity/?id=' + str(actId),
+            'data': {
+                'actName': {
+                    'value': actName,
+                    'color': '#FF0000',
+                },
+                'actHour': {
+                    'value': actHour,
+                    'color': '#FF0000',
+                },
+                'actMinute': {
+                    'value': actMinute,
+                    'color': '#FF0000',
+                },
+            },
+        }
+        lib = WeChatLib(WECHAT_TOKEN, WECHAT_APPID, WECHAT_SECRET)
+        token = lib.get_wechat_access_token()
+        rsp = lib._http_post_dict(
+            'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=' + token,
+            jsonPacket
+        )

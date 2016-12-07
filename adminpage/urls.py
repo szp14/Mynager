@@ -9,5 +9,5 @@ __author__ = "Epsirom"
 
 
 urlpatterns = [
-
+    url(r'^admin/?$', AdminPageView.as_view()),
 ]
