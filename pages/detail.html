@@ -2,24 +2,11 @@
 <html lang="zh-CN">
 <head>
 	<meta charset="utf-8">
-	<title>会议申请</title>
+	<title>会议详情</title>
 	<link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">  
 	<link rel="stylesheet" href="css/base.css">
-	<link rel="stylesheet" href="css/datepicker.css">
 	<script type="text/javascript" src="js/jquery-3.1.0.min.js"></script>
 	<script type="text/javascript" src="js/bootstrap.min.js"></script>
-	<script type="text/javascript" src="js/bootstrap-datepicker.js"></script>
-	<script type="text/javascript">
-		$(function () {
-			$(".datepicker").datepicker({
-				language: "zh-CN",
-				autoclose: true,
-				clearBtn: true,
-				todayBtn: true,
-				format: "yyyy-mm-dd"
-			});
-		});
-	</script>
 </head>
 <body>
 <div id="container">
@@ -36,65 +23,63 @@
 		<div class="section_header">会议申请</div>
 		<div class="line">
 			<div class="line_member">会议名称</div>
-			<input class="line_member base_input long_input form-control" type="text" name=""/>
+			<div class="line_member">名称</div>
 			<div class="clear"></div>
 		</div>
 		<div class="line">
 			<div class="line_member">会议类型</div>
-			<input class="line_member base_input long_input form-control" type="text" name=""/>
+			<div class="line_member">类型</div>
+			<div class="clear"></div>
+		</div>
+		<div class="line">
+			<div class="line_member">举办单位</div>
+			<div class="line_member">单位</div>
 			<div class="clear"></div>
 		</div>
 		<div class="line">
 			<div class="line_member">举办地点</div>
-			<input class="line_member base_input long_input form-control" type="text" name=""/>
+			<div class="line_member">地点</div>
 			<div class="clear"></div>
 		</div>
 		<div class="line">
 			<div class="line_member">最大人数</div>
-			<input class="line_member base_input long_input form-control" type="text" name=""/>
+			<div class="line_member">1000地点人</div>
 			<div class="clear"></div>
 		</div>
 		<div class="line">
 			<div class="line_member">联系方式</div>
-			<input class="line_member base_input long_input form-control" type="text" name=""/>
+			<div class="line_member">1111111</div>
 			<div class="clear"></div>
 		</div>
 		<div class="line">
 			<div class="line_member">开始时间</div>
-			<input type="text" class="datepicker line_member base_input form-control" placeholder="请选择日期" />
+			<div class="line_member">2016-12-10</div>
 			<div class="line_member">结束时间</div>
-			<input type="text" class="datepicker line_member base_input form-control" placeholder="请选择日期" />
+			<div class="line_member">2016-12-11</div>
 			<div class="clear"></div>
 		</div>
 		<div class="line">
 			<div class="line_member">会议简介</div>
-			<textarea class="line_member base_textarea form-control" rows="4" name=""></textarea>
+			<div class="line_member">很长很长的简介真的长长出声很长很长的简介真的长长出声很长很长的简介真的长很长很长的简介真的长长出声很长很长的简介真的长长出声很长很长的简介真的长很长很长的简介真的长长出声很长很长的简介真的长长出声很长很长的简介真的长很长很长的简介真的长长出声很长很长的简介真的长长出声很长很长的简介真的长很长很长的简介真的长长出声很长很长的简介真的长长出声很长很长的简介真的长很长很长的简介真的长长出声很长很长的简介真的长长出声很长很长的简介真的长</div>
 			<div class="clear"></div>
 		</div>
 		<div class="line">
 			<div class="line_member">会议附件</div>
 			<div class="line_member">
 				<div class="subline">
-					<input class="" type="file" name="headimg"/>
+					<a href="#">下载附件1(12.450MB)</a>
 				</div>
 				<div class="subline">
-					<input class="" type="file" name="headimg"/>
+					<a href="#">下载附件2(12.450MB)</a>
 				</div>
 			</div>
-			<button type="button" class="line_member btn btn-default">
-				<span class="glyphicon glyphicon-plus"></span> 继续添加附件
-			</button>//一开始只有一个选择文件按钮
 			<div class="clear"></div>
 		</div>
 		<div class="line">
 			<div class="line_member">会议附图</div>
-			<input class="line_member" type="file" name=""/>
+			<img class="line_member" src="image.jpg">
 			<div class="clear"></div>
-		</div>
-		<div class="line">
-			<input class="line_member btn btn-default" type="button" value="发布" onclick=""/>
-			<div class="clear"></div>
-		</div>
+		</div>//小的附图原始大小，大图缩放
 	</div>
 </div>
 </body>
