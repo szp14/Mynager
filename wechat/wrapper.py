@@ -12,7 +12,7 @@ from django.template.loader import get_template
 
 from Mynager import settings
 from codex.baseview import BaseView
-from wechat.models import User
+from wechat.models import User, MyUser
 from Mynager.settings import SITE_DOMAIN, WECHAT_TOKEN, WECHAT_APPID, WECHAT_SECRET
 
 
@@ -83,11 +83,8 @@ class WeChatHandler(object):
     def is_text_command(self, *commands):
         return self.is_msg_type('text') and ((self.input['Content'].split() or [None])[0] in commands)
 
-    def url_help(self):
-        return settings.get_url('u/help')
-
     def url_bind(self):
-        return settings.get_url('u/bind', {'openid': self.user.open_id})
+        return settings.get_url('user/bind', {'openid': self.user.open_id})
 
 
 class WeChatEmptyHandler(WeChatHandler):
@@ -211,9 +208,14 @@ class WeChatView(BaseView):
         msg = self.parse_msg_xml(ET.fromstring(self.request.body))
         if 'FromUserName' not in msg:
             return self.error_message_handler(self, msg, None).handle()
-        user, created = User.objects.get_or_create(open_id=msg['FromUserName'])
-        if created:
-            self.logger.info('New user: %s', user.open_id)
+        user = MyUser.objects.all().filter(open_id=msg['FromUserName'])
+        if not user:
+            djangoUser, created = User.objects.get_or_create(username=msg['FromUserName'])
+            user, created = MyUser.objects.get_or_create(open_id=msg['FromUserName'], user = djangoUser)
+            if created:
+                self.logger.info('New user: %s', user.open_id)
+        else:
+            user = user[0]
         try:
             for handler in self.handlers:
                 inst = handler(self, msg, user)
@@ -232,31 +234,31 @@ class WeChatView(BaseView):
                 msg[child.tag] = child.text
         return msg
 
-def createNotice(users, actId, actName, actHour, actMinute):
-    for user in users:
-        jsonPacket = {
-            'touser': user.open_id,
-            'template_id': 'gG9VdGmd1pj83VMGkBHnPZscG7OcyBJzXDOg3Engl-s',
-            'topcolor': '#FF0000',
-            'url': SITE_DOMAIN + '/u/activity/?id=' + str(actId),
-            'data': {
-                'actName': {
-                    'value': actName,
-                    'color': '#FF0000',
-                },
-                'actHour': {
-                    'value': actHour,
-                    'color': '#FF0000',
-                },
-                'actMinute': {
-                    'value': actMinute,
-                    'color': '#FF0000',
-                },
-            },
-        }
-        lib = WeChatLib(WECHAT_TOKEN, WECHAT_APPID, WECHAT_SECRET)
-        token = lib.get_wechat_access_token()
-        rsp = lib._http_post_dict(
-            'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=' + token,
-            jsonPacket
-        )
+# def createNotice(users, actId, actName, actHour, actMinute):
+#     for user in users:
+#         jsonPacket = {
+#             'touser': user.open_id,
+#             'template_id': 'gG9VdGmd1pj83VMGkBHnPZscG7OcyBJzXDOg3Engl-s',
+#             'topcolor': '#FF0000',
+#             'url': SITE_DOMAIN + '/u/activity/?id=' + str(actId),
+#             'data': {
+#                 'actName': {
+#                     'value': actName,
+#                     'color': '#FF0000',
+#                 },
+#                 'actHour': {
+#                     'value': actHour,
+#                     'color': '#FF0000',
+#                 },
+#                 'actMinute': {
+#                     'value': actMinute,
+#                     'color': '#FF0000',
+#                 },
+#             },
+#         }
+#         lib = WeChatLib(WECHAT_TOKEN, WECHAT_APPID, WECHAT_SECRET)
+#         token = lib.get_wechat_access_token()
+#         rsp = lib._http_post_dict(
+#             'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=' + token,
+#             jsonPacket
+#         )
