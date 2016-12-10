@@ -1,7 +1,10 @@
 from codex.baseerror import *
 from codex.baseview import APIView
 from wechat.models import MyUser, Meeting, Attachment
+from wechat.views import CustomWeChatView
+from django.contrib.auth.models import User
 import urllib
+import math
 from urllib import request
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
@@ -17,17 +20,73 @@ class HomePageView(APIView):
 
 class MeetingListView(APIView):
     def get(self):
-        meetings = Meeting.objects.filter(status__gt=0)
-        return [
-            {
+        self.check_input("meeting_num", "page_index")
+        meetings = Meeting.objects.filter(status__gt=-1)
+        data = {
+            "status": False,
+            "total_page": 0,
+            "list": []
+        }
+        num0 = int(self.input["meeting_num"])
+        num1 = int(self.input["page_index"])
+        len0 = len(meetings)
+        if len0 >= num0 * (num1 - 1):
+            if len0 <= num0 * num1:
+                end0 = len0
+            else:
+                end0 = num0 * num1
+            start0 = num0 * (num1 - 1)
+            data["status"] = True
+            data["total_page"] = math.ceil(len0 / num0)
+            data["list"] = [{
+                "id": meet0.id,
                 "meeting_type": meet0.meeting_type,
                 "name": meet0.name,
                 "organizer": meet0.organizer.name,
                 "pic_url": meet0.pic_url,
                 "start_time": meet0.start_time,
+                "description": meet0.description,
                 "place": meet0.place,
-            } for meet0 in meetings
+            } for meet0 in meetings[start0:end0]
         ]
+        #print (data)
+        return data
+
+    def post(self):
+        self.check_input("meeting_num", "page_index", "key_word")
+        meetings = Meeting.objects.filter(status__gt=-1)
+        num0 = int(self.input["meeting_num"])
+        num1 = int(self.input["page_index"])
+        key = self.input["key_word"]
+        data = {
+            "status": False,
+            "total_page": 0,
+            "list": []
+        }
+        meets = [meet0 for meet0 in meetings if meet0.name.find(key) > -1 or meet0.description.find(key) > -1]
+        len0 = len(meets)
+        if len0 >= num0 * (num1 - 1):
+            if len0 <= num0 * num1:
+                end0 = len0
+            else:
+                end0 = num0 * num1
+            start0 = num0 * (num1 - 1)
+            data["status"] = True
+            data["total_page"] = math.ceil(len0 / num0)
+            data["list"] = [{
+                "id": meet0.id,
+                "meeting_type": meet0.meeting_type,
+                "name": meet0.name,
+                "description": meet0.description,
+                "organizer": meet0.organizer.name,
+                "pic_url": meet0.pic_url,
+                "start_time": meet0.start_time,
+                "place": meet0.place,
+                } for meet0 in meets[start0:end0]
+            ]
+        #print(data)
+        return data
+
 
 
 class MeetingDetailView(APIView):
@@ -84,24 +143,48 @@ class RegisterView(APIView):
 class LogInView(APIView):
     def get(self):
         if self.request.user.is_authenticated():
-            return {}
+            return self.request.user.myuser.user_type
         else:
-            raise InputError('You have not logged in')
+            return 0
 
     def post(self):
         self.check_input('username', 'password')
-        user = authenticate(username = self.input['username'],
-                            password = self.input['password'])
+        user = authenticate(username = self.input['username'], password = self.input['password'])
         if user is not None:
             login(self.request, user)
-            return
+            return 1
         else:
-            raise InputError('Fail to log in')
+            return 2
 
 class LogOutView(APIView):
     @login_required
     def get(self):
         logout(self.request)
+
+class UserBindView(APIView):
+    def get(self):
+        self.check_input("open_id")
+        user = MyUser.objects.filter(open_id=self.input["open_id"])
+        if len(user) < 1:
+            raise LogicError("未找到符合要求的对应微信用户!")
+        if user[0].user_type == 0:
+            return False
+        else:
+            return True
+
+    def post(self):
+        self.check_input("openid", "account", "password")
+        user = authenticate(username=self.input['account'], password=self.input['password'])
+        if user is not None:
+            if user.myuser.open_id:
+                raise LogicError('该Mynager账号已绑定了微信号，请解绑后重试！')
+            old_user = User.objects.get(username=self.input["openid"])
+            old_user.delete()
+            user.myuser.open_id = self.input["openid"]
+            user.myuser.save()
+            login(self.request, user)
+        else:
+            raise ValidateError("账号或者密码不正确，请重新输入！")
 
 class UserCenterView(APIView):
     @login_required

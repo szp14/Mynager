@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^homepage/?$', HomePageView.as_view()),
     url(r'^participant/?$', ParticipantManageView.as_view()),
     url(r'^user/center/?$', UserCenterView.as_view()),
+    url(r'^user/bind/?$', UserBindView.as_view()),
     url(r'^publisher/?$', OrganizerCenterView.as_view()),
     url(r'^register/?$', RegisterView.as_view()),
 ]

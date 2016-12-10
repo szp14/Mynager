@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 class MyUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     open_id = models.CharField(max_length=64, db_index=True)
-    user_type = models.SmallIntegerField(default = 0)
+    user_type = models.SmallIntegerField(default=0)
     description = models.CharField(max_length=256)
     phone_num = models.CharField(max_length=32)
     pic_url = models.CharField(max_length=128)
@@ -21,6 +21,7 @@ class MyUser(models.Model):
         u = MyUser(user = q, user_type=dic["user_type"])
         u.registered_time = timezone.now()
         u.save()
+        return u
 
     def change_information(self, dic):
         own_keys = [
@@ -41,9 +42,9 @@ class MyUser(models.Model):
             self.user.set_email(dic['email'])
         self.save()
 
-    USER_ORGANIZER = 2
     USER_PARTICIPANTS = 1
-    USER_ADMIN = 0
+    USER_ORGANIZER = 2
+    USER_ADMIN = 3
 
 class Meeting(models.Model):
     meeting_type = models.CharField(max_length=128)
@@ -55,7 +56,7 @@ class Meeting(models.Model):
     start_time = models.DateTimeField(null = True)
     end_time = models.DateTimeField(null = True)
     place = models.CharField(max_length=256)
-    status = models.IntegerField(default = 0)
+    status = models.IntegerField(default = -1)
     pic_url = models.CharField(max_length=256)
     homepage_url = models.CharField(max_length=256)
 
@@ -105,7 +106,6 @@ class Meeting(models.Model):
             self.__dict__[key] = dic[key]
         self.save()
 
-    STATUS_SAVING = -2
     STATUS_PENDING = -1
     STATUS_READY = 0
     STATUS_HOLD = 1
