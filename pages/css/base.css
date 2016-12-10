@@ -247,3 +247,17 @@ a:hover{
 	margin-left:20px;
 	font-size:14px;
 }
+.hp_carousel{
+	width:960px;
+	margin:19px;
+	padding:0;
+	background-color:#ffffff;
+}
+.hp_img{
+	width:960px;
+	height:500px;
+	position:relative;
+}
+.nomargin{
+	margin:0;
+}
