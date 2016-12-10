@@ -208,6 +208,7 @@ class WeChatView(BaseView):
         msg = self.parse_msg_xml(ET.fromstring(self.request.body))
         if 'FromUserName' not in msg:
             return self.error_message_handler(self, msg, None).handle()
+<<<<<<< HEAD
         user = MyUser.objects.all().filter(open_id=msg['FromUserName'])
         if not user:
             djangoUser, created = User.objects.get_or_create(username=msg['FromUserName'])
@@ -216,6 +217,12 @@ class WeChatView(BaseView):
                 self.logger.info('New user: %s', user.open_id)
         else:
             user = user[0]
+=======
+        djangoUser, created = User.objects.get_or_create(username = msg['FromUserName'])
+        user, created = MyUser.objects.get_or_create(open_id=msg['FromUserName'], user = djangoUser)
+        if created:
+            self.logger.info('New user: %s', user.open_id)
+>>>>>>> origin/master
         try:
             for handler in self.handlers:
                 inst = handler(self, msg, user)
