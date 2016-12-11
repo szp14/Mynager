@@ -1,8 +1,10 @@
 body{
 	margin:0px;
-	background-color:#d8d8d8;
+    background:-moz-linear-gradient(#686ec2, #a9a9ff, #a9a9ff);
+    background:linear-gradient(#686ec2, #a9a9ff, #a9a9ff);
 	font-family:"Microsoft YaHei";
 	font-size:16px;
+	min-height:720px;
 }
 p{
 	margin:2px;
@@ -28,7 +30,10 @@ a:hover{
 #container{
 	width:1000px;
 	margin:0px auto;
-	background-color:#cbe3f5;
+	background-color:#a9a9ff;
+	/* #cbe3f5; */
+    /* background:-moz-linear-gradient(#686ec2, #a9a9ff, #a9a9ff); */
+    /* background:linear-gradient(#686ec2, #a9a9ff, #a9a9ff); */
 	padding-bottom:20px
 }
 #header{
@@ -42,11 +47,9 @@ a:hover{
 }
 .header_left_item{
 	float:left;
-	/* padding-left:10px; */
 }
 .header_right_item{
 	float:right;
-	/* padding-right:10px; */
 	margin-right:2px;
 }
 .section{
@@ -83,9 +86,11 @@ a:hover{
 	padding-left:20px;
 	line-height:50px;
 	font-size:17px;
+	background-color:#f0ecfa;
 	border-bottom-style:solid;
 	border-width:1px;
 	border-color:#bbbbbb;
+	border-radius:6px 6px 0 0;
 	font-weight:bold;
 }
 .base_btn{
