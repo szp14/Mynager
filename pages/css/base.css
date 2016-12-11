@@ -87,42 +87,15 @@ input[type="button"]
 	border-radius:6px 6px 0 0;
 	font-weight:bold;
 }
-/* .base_btn{ */
-	/* height:25px; */
-	/* min-width:60px; */
-	/* line-height:20px; */
-	/* font-size:12px; */
-	/* background-color:#ffffff; */
-	/* border-style:solid; */
-	/* border-width:1px; */
-	/* border-color:#bbbbbb; */
-	/* border-radius:6px; */
-	/* cursor:pointer; */
-/* } */
 .base_input{
 	height:30px;
 	width:200px;
-	/* border-style:solid; */
-	/* border-width:1px; */
-	/* border-color:#bbbbbb; */
-	/* border-radius:6px; */
 }
 .base_textarea{
 	height:100px;
 	width:700px;
-	/* border-style:solid; */
-	/* border-width:1px; */
-	/* border-color:#bbbbbb; */
-	/* border-radius:6px; */
 }
-/* .base_select{ */
-	/* height:25px; */
-	/* width:100px; */
-	/* border-style:solid; */
-	/* border-width:1px; */
-	/* border-color:#bbbbbb; */
-	/* border-radius:6px; */
-/* } */
+
 .single_btn{
 	margin:30px 0 0 30px;
 }
