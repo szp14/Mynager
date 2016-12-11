@@ -24,6 +24,10 @@ a:hover{
 	color:#000000;
 	text-decoration:underline;
 }
+input[type="button"]
+{
+	background-color:#f0ecfa;
+}
 .clear{
 	clear:both;
 }
@@ -31,9 +35,6 @@ a:hover{
 	width:1000px;
 	margin:0px auto;
 	background-color:#a9a9ff;
-	/* #cbe3f5; */
-    /* background:-moz-linear-gradient(#686ec2, #a9a9ff, #a9a9ff); */
-    /* background:linear-gradient(#686ec2, #a9a9ff, #a9a9ff); */
 	padding-bottom:20px
 }
 #header{
@@ -44,13 +45,6 @@ a:hover{
 	border-bottom-style:solid;
 	border-width:1px;
 	border-color:#bbbbbb;
-}
-.header_left_item{
-	float:left;
-}
-.header_right_item{
-	float:right;
-	margin-right:2px;
 }
 .section{
 	width:960px;
@@ -201,7 +195,6 @@ a:hover{
 }
 .subline{
 	height:43px;
-	/* margin-top:10px; */
 }
 .subline_prompt{
 	float:left;
@@ -263,6 +256,16 @@ a:hover{
 	height:500px;
 	position:relative;
 }
+.hp_headimg{
+	width:35px;
+	height:35px;
+	float:right;
+	margin-top:8px;
+}
 .nomargin{
 	margin:0;
+}
+.warning{
+	width:500px;
+	margin-left:50px;
 }
