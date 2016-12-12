@@ -5,6 +5,7 @@
 	<title>个人中心</title>
 	<link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">  
 	<link rel="stylesheet" href="css/base.css">
+	<link rel="stylesheet" href="css/base-y.css">
 	<script type="text/javascript" src="js/jquery-3.1.0.min.js"></script>
 	<script type="text/javascript" src="js/bootstrap.min.js"></script>
 </head>
@@ -30,17 +31,17 @@
         <div class="section_header">会议活动信息</div>
         <div class="line">
             <div class="line_member line_prompt">当前共1个已参加会议</div>
-			<button type="button" class="btn btn-link" onclick="openwindow(document.getElementById('list_1'))">查看</button>
+			<button type="button" class="btn btn-link" data-toggle="modal" data-target="#list_1">查看</button>
             <div class="clear"></div>
         </div>
         <div class="line">
             <div class="line_member line_prompt">当前共1个报名</div>
-			<button type="button" class="btn btn-link" onclick="openwindow(document.getElementById('list_1'))">查看</button>
+			<button type="button" class="btn btn-link" data-toggle="modal" data-target="#list_2">查看</button>
             <div class="clear"></div>
         </div>
         <div class="line">
             <div class="line_member line_prompt">当前共1个邀请</div>
-			<button type="button" class="btn btn-link" onclick="openwindow(document.getElementById('list_1'))">查看</button>
+			<button type="button" class="btn btn-link" data-toggle="modal" data-target="#list_3">查看</button>
             <div class="clear"></div>
         </div>
     </div>
@@ -120,6 +121,117 @@
 			<div class="clear"></div>
 		</div>
 	</div>
+</div>
+<div class="modal fade" id="list_1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" align="center">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">会议名称</h4>
+            </div>
+            <table class="tablesize">
+            	<tbody>
+            	<tr align="center" valign="middle">
+                	<td class="tableitemsize"><p>写软工作业写软工作啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦了了了了了了了了了了了了了了</p></td>
+            	</tr>
+            	<tr align="center" valign="middle">
+                	<td class="tableitemsize"><p>写软工作业写软工作啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦了了了了了了了了了了了了了了</p></td>
+            	</tr>
+            	<tr align="center" valign="middle">
+                	<td class="tableitemsize"><p>写软工作业写软工作啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦了了了了了了了了了了了了了了</p></td>
+            	</tr>
+            	</tbody>
+        	</table>
+        	<div>
+				<ul class="pagination">
+					<li><a href="#">&laquo;</a></li>
+					<li class="active"><a href="#">1</a></li>
+					<li><a href="#">2</a></li>
+					<li><a href="#">&raquo;</a></li>
+				</ul>
+			</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<div class="modal fade" id="list_2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" align="center">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">会议名称</h4>
+            </div>
+            <table class="tablesize">
+            	<tbody>
+            	<tr align="center" valign="middle">
+                	<td class="tableitemsize"><p>写软工作业写软工作啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦了了了了了了了了了了了了了了</p></td>
+            	</tr>
+            	<tr align="center" valign="middle">
+                	<td class="tableitemsize"><p>写软工作业写软工作啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦了了了了了了了了了了了了了了</p></td>
+            	</tr>
+            	<tr align="center" valign="middle">
+                	<td class="tableitemsize"><p>写软工作业写软工作啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦了了了了了了了了了了了了了了</p></td>
+            	</tr>
+            	</tbody>
+       		</table>
+       		<div>
+				<ul class="pagination">
+					<li><a href="#">&laquo;</a></li>
+					<li class="active"><a href="#">1</a></li>
+					<li><a href="#">2</a></li>
+					<li><a href="#">&raquo;</a></li>
+				</ul>
+			</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<div class="modal fade" id="list_3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" align="center">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">会议邀请</h4>
+            </div>
+            <table class="tablesize">
+            <tbody>
+            	<tr align="center" valign="middle">
+                	<td class="tableitemsize_3"><p>写软工作业写软工作啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦</p></td>
+                	<td class="tableitemsize_2">
+                		<div class="modal-footer">
+                			<button type="button" class="btn btn-default" data-dismiss="modal">同意</button>
+                			<button type="button" class="btn btn-primary">拒绝</button>
+            			</div>
+            		</td>
+            	</tr>
+            	<tr align="center" valign="middle">
+                	<td class="tableitemsize_3"><p>写软工作业写软工作啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦</p></td>
+                	<td class="tableitemsize_2">
+                		<div class="modal-footer">
+                			<button type="button" class="btn btn-default" data-dismiss="modal">同意</button>
+                			<button type="button" class="btn btn-primary">拒绝</button>
+            			</div>
+            		</td>
+            	</tr>
+            </tbody>
+        	</table>
+        	<div>
+				<ul class="pagination">
+					<li><a href="#">&laquo;</a></li>
+					<li class="active"><a href="#">1</a></li>
+					<li><a href="#">2</a></li>
+					<li><a href="#">&raquo;</a></li>
+				</ul>
+			</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
 </div>
 </body>
 
