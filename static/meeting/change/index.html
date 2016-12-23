@@ -1,0 +1,197 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>会议修改</title>
+  <link rel="stylesheet" href="/css/bootstrap.min.css">  
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/datepicker.css">
+  <script type="text/javascript" src="/js/jquery-3.1.0.min.js"></script>
+  <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/js/base.js"></script>
+  <script type="text/javascript" src="/js/bootstrap-datepicker.js"></script>
+  <script type="text/javascript" src="/3rd/swig.js"></script>
+</head>
+<body>
+<div id="container">
+  <div id="header">
+    <b>会议修改</b>
+    <div class="clear"></div>
+  </div>
+  <div class="section" id="meet_detail"></div>
+</div>
+</body>
+<script type="text/template" id="tpl-meet_detail">
+    <div class="section_header">会议修改</div>
+    <div class="line">
+      <div class="line_member">会议名称</div>
+      <input class="line_member base_input long_input form-control" type="text" id="meet_name" name="" value="{{ showdata.name }}"/>
+      <div class="clear"></div>
+    </div>
+    <div class="line">
+      <div class="line_member">会议类型</div>
+      <input class="line_member base_input long_input form-control" type="text" id="meet_type" name="" value="{{ showdata.meeting_type }}" />
+      <div class="clear"></div>
+    </div>
+    <div class="line">
+      <div class="line_member">举办地点</div>
+      <input class="line_member base_input long_input form-control" type="text" id="meet_place" name="" value="{{ showdata.place }}" />
+      <div class="clear"></div>
+    </div>
+    <div class="line">
+      <div class="line_member">最大人数</div>
+      <input class="line_member base_input long_input form-control" type="text" id="people_num" name="" value="{{ showdata.max_people_num }}"/>
+      <div class="clear"></div>
+    </div>
+    <div class="line">
+      <div class="line_member">联系方式</div>
+      <input class="line_member base_input long_input form-control" type="text" id="phone_num" name="" value="{{ showdata.phone_num }}"/>
+      <div class="clear"></div>
+    </div>
+    <div class="line">
+        <div class="line_member">开始时间</div>
+        <input type="text" class="datepicker line_member base_input form-control" id="start_time" placeholder="请选择日期" value="{{ showdata.start_time }}"/>
+        <div class="line_member">结束时间</div>
+        <input type="text" class="datepicker line_member base_input form-control" id="end_time" placeholder="请选择日期" value="{{ showdata.end_time }}"/>
+        <div class="clear"></div>
+    </div>
+    <div class="line">
+      <div class="line_member">会议简介</div>
+      <textarea class="line_member base_textarea form-control" id="meet_brief" rows="4" name="">{{ showdata.description }}</textarea>
+      <div class="clear"></div>
+    </div>
+    <div class="line">
+      <div class="line_member">会议附件</div>
+      <div class="line_member">
+          {% for attach in showdata.attachs %}
+        <div class="subline">
+          <a href="{{ attach.file_url }}" download="{{ attach.file_name }}">{{ attach.file_name }}({{ attach.file_size }})</a>
+          <button type="button" class="close" onclick="DelAttach({{ attach.id }})">&times;</button>
+        </div>
+          {% endfor %}
+          <div class="subline">
+            <input class="" type="file" id="file" name=""/>
+          </div>
+      </div>
+      <input class="line_member btn btn-default" type="button" value="确认上传" onclick="UploadFile()"/>
+    <div class="clear"></div>
+    </div>
+    <div class="line">
+      <div class="line_member">会议附图</div>
+      <div class="line_member">
+      <img style="max-width: 800px" src="{{ showdata.pic_url }}">
+      <div class="subline">
+          <input class="" id="UploadImg" type="file" name=""/>
+      </div>
+      </div>
+      <div class="clear"></div>
+    </div>
+	  <div class="line">
+        <input class="line_member btn btn-default single_btn" type="button" value="发布" onclick="ChangeMessage()"/>
+	    <div id="warning"></div>
+        <div class="clear"></div>
+      </div>
+</script>
+<script type="text/javascript">
+    var showdata;
+    $(function () {
+        GetChangeDetail();
+    });
+    function GetChangeDetail() {
+        var meet_id = urlParam.meet_id;
+        GetMeeting(meet_id, function (data) {
+            showdata = data;
+            RenderTpl("meet_detail", showdata);
+            $(".datepicker").datepicker({
+                language: "zh-CN",
+                autoclose: true,
+                clearBtn: true,
+                todayBtn: true,
+                format: "yyyy-mm-dd"
+            });
+        });
+    }
+    function DelAttach(id) {
+        api.get("/api/u/attachment/create", { "attach_id": id }, function (data) {
+                GetChangeDetail();
+        }, dftFail)
+    }
+    function UploadFile() {
+        var files = $("#file").prop("files"), form = new FormData();
+        if(files.length < 1) {
+            return;
+        }
+        form.append("uploadfile", files[0]);
+        form.append("meet_id", urlParam.meet_id);
+        api.postForm("/api/u/attachment/create", form, function (data) {
+            GetChangeDetail();
+        }, dftFail);
+    }
+    function ChangeMessage() {
+        var transdata = {
+            'meeting_id': urlParam.meet_id,
+            'meeting_type': $("#meet_type").val(),
+            'name': $("#meet_name").val(),
+            'max_people_num': $("#people_num").val(),
+            'phone_num': $("#phone_num").val(),
+            'description': $("#meet_brief").val(),
+            'start_time':$("#start_time").val(),
+            'end_time':$("#end_time").val(),
+            'place':$("#meet_place").val(),
+            'uploadpic':$("#UploadImg").prop("files")
+        };
+        if(transdata['meeting_type'] == '' || transdata['name'] == '' || transdata['max_people_num'] == ''
+                || transdata['description'] == '' || transdata['start_time'] == '' || transdata['phone_num'] == ''
+                || transdata['end_time'] == '' || transdata['place'] == '' ){
+			document.getElementById("warning").innerHTML='<div class="warning alert alert-danger alert-dismissable">\
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;\
+			</button>不能有空的输入框！</div>';
+            //alert("不能有空的输入框！");
+            return;
+        }
+		if(transdata['start_time'] > transdata['end_time']) {
+			document.getElementById("warning").innerHTML='<div class="warning alert alert-danger alert-dismissable">\
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;\
+			</button>开始时间不能晚于结束时间！</div>';
+			return;
+		}
+		var myDate = new Date();
+		if(myDate.toLocaleDateString().replace(/\//g,'-') >= transdata['start_time']) {
+			document.getElementById("warning").innerHTML='<div class="warning alert alert-danger alert-dismissable">\
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;\
+			</button>开始时间不能早于当前时间！</div>';
+			return;
+		}
+        var form1 = new FormData();
+        if(transdata["uploadpic"].length > 0) {
+            var ls = transdata['uploadpic'][0].name.split(".");
+            var pic_type = ls[ls.length - 1].toLowerCase();
+            if(isNaN(transdata['phone_num']) || isNaN(transdata['max_people_num'])) {
+				document.getElementById("warning").innerHTML='<div class="warning alert alert-danger alert-dismissable">\
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;\
+				</button>数字格式不正确，请检查！</div>';
+                //alert("数字格式不正确，请检查！");
+                return;
+            }
+            if(pic_type != 'png' && pic_type != 'bmp' && pic_type != 'gif' && pic_type != 'jpg' && pic_type != 'jpeg') {
+				document.getElementById("warning").innerHTML='<div class="warning alert alert-danger alert-dismissable">\
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;\
+				</button>不支持的图片格式！</div>';
+                //alert("不支持的图片格式！");
+                return;
+            }
+            form1.append("uploadpic", transdata["uploadpic"][0]);
+        }
+        for(var i in transdata) {
+            if(i == "uploadpic") {
+                continue;
+            }
+            form1.append(i, transdata[i]);
+        }
+        api.postForm("/api/u/meeting/detail", form1, function () {
+            alert("修改会议信息成功！");
+            window.location.reload();
+        }, dftFail);
+    }
+</script>
+</html>

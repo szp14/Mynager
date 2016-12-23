@@ -1,0 +1,161 @@
+﻿﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="utf-8">
+	<title>会议管理</title>
+	<link rel="stylesheet" href="/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/base-y.css">
+	<script type="text/javascript" src="/js/base.js"></script>
+	<script type="text/javascript" src="/js/jquery-3.1.0.min.js"></script>
+	<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/3rd/swig.js"></script>
+</head>
+<body>
+<div id="container">
+	<div id="header">
+		<ul class="nav navbar-nav">
+			<li><a href="/user/homepage"><span class="glyphicon glyphicon-home"> 主页</span></a></li>
+		</ul>
+		<b>会议管理</b>
+		<div class="clear"></div>
+	</div>
+	<div class="section">
+		<div class="section_header">会议批准</div>
+		<div class="list" id="meeting_list1"></div>
+	</div>
+	<div class="section">
+		<div class="section_header">会议管理</div>
+		<div class="list" id="meeting_list2"></div>
+	</div>
+</div>
+<div id="reasons"></div>
+</body>
+<script type="text/template" id="tpl-meeting_list1">
+    {% for meet in meetings %}
+    <div class="item">
+        <div class="item_name"><p>{{ meet.name }}</p></div>
+        <div class="item_intro"><p>{{ meet.description }}</p></div>
+        <div class="item_note"><p>{{ meet.organizer }}</p></div>
+        <div class="btn-group item_btn">
+            <button type="button" class="btn btn-default" onclick="window.open('/meeting/detail?id={{ meet.id }}')">查看详情</button>
+            <button type="button" class="btn btn-default" onclick="Allow({{ meet.id }}, '{{ meet.name }}', {{ meet.organ_id }})">同意</button>
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#reject_input_{{ meet.id }}">拒绝</button>
+        </div>
+        <div class="clear"></div>
+    </div>
+    {% endfor %}
+</script>
+<script type="text/template" id="tpl-meeting_list2">
+    {% for meet in meetings %}
+    <div class="item">
+        <div class="item_name"><p>{{ meet.name }}</p></div>
+        <div class="item_intro"><p>{{ meet.description }}</p></div>
+        <div class="item_note"><p>
+            {% if meet.status == -1 %}
+            停止
+            {% elif meet.status == -2 %}
+            拒绝
+            {% elif meet.status == 1 %}
+            正常
+            {% elif meet.status == 3 %}
+            结束
+            {% endif %}
+        </p></div>
+        <div class="btn-group item_btn">
+            <button type="button" class="btn btn-default" onclick="window.open('/meeting/detail?id={{ meet.id }}')">查看详情</button>
+            {% if meet.status != 3 %}
+                <button type="button" class="btn btn-default" onclick="Change({{ meet.id }}, {{ meet.status }})">
+                {% if meet.status == -1 %}恢复{% elif meet.status == -2 %}同意{% else %}停止{% endif %}
+                </button>
+            {% endif %}
+            <button type="button" class="btn btn-default" onclick="DelMeet({{ meet.id }})">删除</button>
+        </div>
+        <div class="clear"></div>
+    </div>
+    {% endfor %}
+</script>
+<script type="text/template" id="tpl-reasons">
+    {% for meet in meetings %}
+    <div class="modal fade" id="reject_input_{{ meet.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" align="center">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">请输入理由</h4>
+            </div>
+            <textarea class="yinputtext" rows="5" id="input_reason_{{ meet.id }}" placeholder="最多输入150字" maxlength=150></textarea>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" onclick="SubReason('{{ meet.name }}', {{ meet.id }}, {{ meet.organ_id }})">确定</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+    </div>
+    {% endfor %}
+</script>
+<script type="text/javascript">
+    var page_index = 0, meetings, meetings1, meeting_num = 6;
+    function GetAllList(index, stat) {
+        api.get('/api/u/meeting/list', {"meeting_num": meeting_num, "page_index": index, "status": stat}, function (data) {
+            //status:状态, total_page:总页数, list:会议信息列表
+            if (data[status] == false) {
+                alert("获取会议列表错误，可能该页会议不存在！");
+                return;
+            }
+            page_index = index;
+            meetings = data["list"];
+            //("#page_nums").html(swig.render($("#tpl-page_nums").html(), { page_index }));
+            if(stat == 0) {
+                RenderTpl("meeting_list1", {  meetings });
+                RenderTpl("reasons", {  meetings });
+            }
+            else
+                RenderTpl("meeting_list2", { meetings });
+        }, dftFail);
+    }
+    function Allow(meet_id, meet_name, user_id) {
+        //console.log(meet_id);
+        api.post("/api/u/meeting/detail", { "meeting_id": meet_id, "status": 1 }, function (data) {
+            alert("该会议已经被批准举行！");
+            var word = "您的会议“" + meet_name + "”已经被批准举行！";
+            CreateNotice([user_id], word);
+            window.location.reload(true);
+        }, dftFail);
+    }
+    function Change(meet_id, stat) {
+        var type = -1;
+        if(stat == 1)
+                type = -1;
+        else
+                type = 1;
+        api.post("/api/u/meeting/detail", { "meeting_id": meet_id, "status": type }, function (data) {
+            GetAllList(1, 0);
+            GetAllList(1, 1);
+        }, dftFail);
+    }
+    function SubReason(meet_name, meet_id, organ_id) {
+        var content = $("#input_reason_" + meet_id).val();
+        content = content.trim();
+        if(content.length > 150 || content.length < 1) {
+            alert("原因过长或过短！");
+            return;
+        }
+        CreateNotice([organ_id], "您的会议" + meet_name + "被管理员拒绝举行，原因是：" + content + "；该会议已被删除！", function () {
+            DeleteMeeting(meet_id, function () {
+                window.location.reload();
+            });
+        });
+    }
+    function DelMeet(meet_id) {
+        api.get("/api/u/meeting/create", { "meeting_id": meet_id }, function (data) {
+            GetAllList(1, 0);
+            GetAllList(1, 1);
+        }, dftFail)
+    }
+    $(function () {
+        GetAllList(1, 0);
+        GetAllList(1, 1);
+    })
+</script>
+</html>

@@ -1,0 +1,184 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="utf-8">
+	<title id="title"></title>
+	<link rel="stylesheet" href="/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/css/base.css">
+	<link rel="stylesheet" type="text/css" href="/css/base-y.css">
+	<script type="text/javascript" src="/js/jquery-3.1.0.min.js"></script>
+	<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/3rd/swig.js"></script>
+    <script type="text/javascript" src="/js/base.js"></script>
+</head>
+<body>
+<div id="container">
+	<div id="header">
+        <b>会议参加者管理</b>
+        <div class="clear"></div>
+    </div>
+	<div class="section" id="user_list1"></div>
+    <div class="section" id="user_list2"></div>
+	<div class="section">
+        <div class="section_header">邀请参加者</div>
+        <div class="line">
+            <div class="line_member">关键词:</div>
+            <div class="input-group long_input line_member">
+                <input class="form-control" id="key_word" type="text">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" onclick="SearchUsers()">搜索</button>
+                </span>
+            </div>
+			<div id="warning2"></div>
+            <div class="clear"></div>
+            <div class="list" id="user_list3"></div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/template" id="tpl-title">
+    {{ meet.name }}
+</script>
+<script type="text/template" id="tpl-user_list1">
+    <div class="section_header">当前参加者和邀请者</div>
+    <div class="list">
+        {% for user in users %}
+            {% if user.status > 1 %}
+			<div class="item">
+				<div class="item_name"><p>{{ user.user_name }}</p></div>
+				<div class="item_intro"><p>简介1</p></div>
+				<div class="item_note"><p>{% if user.status == 2 %}已发送邀请{% else %}参加会议{% endif %}</p></div>
+				<div class="btn-group item_sbtn">
+                    <button type="button" class="btn btn-default" {% if user.status == 2 %}onclick="ChangeRelation({{ user.user_id }}, 0, 2)">取消邀请{% else %}onclick="ChangeRelation({{ user.user_id }}, 0, 3)">移除参加者{% endif %}</button>
+				</div>
+				<div class="clear"></div>
+		</div>
+            {% endif %}
+        {% endfor %}
+    </div>
+		<div class="line">
+			<div class="line_member">发送通知</div>
+			<textarea id="notice" class="line_member base_textarea form-control" rows="3" name=""></textarea>
+			<input class="line_member btn btn-default" type="button" value="发送" onclick="SendNotice()"/></br>
+			<div class="clear"></div>
+		</div>
+		<div id="warning1"></div>
+		<div class="clear"></div>
+</script>
+<script type="text/template" id="tpl-user_list2">
+    <div class="section_header">报名批准</div>
+    <div class="list">
+        {% for user in users %}
+        {% if user.status == 1 %}
+        <div class="item">
+            <div class="item_name"><p>{{ user.user_name }}</p></div>
+            <div class="item_intro"><p>简介1</p></div>
+            <div class="item_note"><p>说明</p></div>
+            <div class="btn-group item_sbtn">
+                <button type="button" class="btn btn-default" onclick="ChangeRelation({{ user.user_id }}, 3)">同意</button>
+                <button type="button" class="btn btn-default" onclick="ChangeRelation({{ user.user_id }}, 0, 1)">拒绝</button>
+            </div>
+            <div class="clear"></div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</script>
+<script type="text/template" id="tpl-user_list3">
+    {% for user in search_users %}
+        {% if user.relation == 0 %}
+        <div class="item">
+            <div class="item_name"><p>{{ user.name }}</p></div>
+            <div class="item_intro"><p>{{ user.description }}</p></div>
+            <div class="item_note"><p>未邀请</p></div>
+            <div class="btn-group item_sbtn">
+                <button type="button" class="btn btn-default" onclick="ChangeInvite({{ user.id }}, 2)">发送邀请</button>
+            </div>
+            <div class="clear"></div>
+        </div>
+        {% endif %}
+    {% endfor %}
+</script>
+<script type="text/javascript">
+    var users, search_users, meet;
+    $(function () {
+        GetPart();
+        GetMeeting(urlParam.meet_id, function (data) {
+            meet = data;
+            RenderTpl("title", meet);
+        });
+    });
+    function GetPart() {
+        api.get("/api/u/meeting/participate", { "meet_id": urlParam.meet_id }, function (data) {
+            users = data;
+            RenderTpl("user_list1", users);
+            RenderTpl("user_list2", users);
+        }, dftFail)
+    }
+    function ChangeRelation(user_id, status, type) {
+        api.post("/api/u/relation/change", { "user_id": user_id, "meet_id": urlParam.meet_id, "relation": status }, function (data) {
+            if (status == 3) {
+                var word = "你参加了会议“" + meet.name + "”。";
+                CreateNotice([ user_id ], word);
+            }
+            else if(status == 0) {
+                var word = '';
+                if (type == 1)
+                    word = "您的报名被“" + meet.name + "”管理员拒绝。";
+                else if(type == 2)
+                    word = "“" + meet.name + "”管理员取消了对您的邀请。";
+                else
+                    word = "“" + meet.name + "”管理员将你移除该会议。";
+                CreateNotice([ user_id ], word);
+            }
+            GetPart();
+        }, dftFail)
+    }
+    function SearchUsers() {
+        var word = $("#key_word").val();
+        if (word.trim() == ""){
+			document.getElementById("warning2").innerHTML='<div class="warning alert alert-danger alert-dismissable">\
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;\
+			</button>请输入具体关键字！</div>';
+            //alert("请输入具体关键字！");
+            return;
+        }
+        api.post("/api/u/meeting/participate/", { "meet_id": urlParam.meet_id, "key_word": word }, function (data) {
+            search_users = data;
+            RenderTpl("user_list3", search_users);
+        }, dftFail)
+    }
+    function ChangeInvite(user_id, status) {
+        api.post("/api/u/relation/change", { "user_id": user_id, "meet_id": urlParam.meet_id, "relation": status }, function (data) {
+            var word = "会议“" + meet.name + "”邀请您参加该会议。";
+            CreateNotice([ user_id ], word);
+            GetPart();
+            SearchUsers();
+        }, dftFail)
+    }
+    function SendNotice() {
+        var word = $("#notice").val();
+        if (word.trim() == '') {
+			document.getElementById("warning1").innerHTML='<div class="warning alert alert-danger alert-dismissable">\
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;\
+			</button>通知内容不能为空！</div>';
+            //alert("通知内容不能为空！");
+            return;
+        }
+        if(confirm("您即将向参加会议的所有用户发送通知“" + word + "”，您确定要这么做么？")) {
+            var toids =  new Array();
+            for (var i = 0; i < users.length; i++) {
+                if(users[i].status == 3) {
+                    toids[toids.length] = users[i].user_id;
+                }
+            }
+            var fromname = "会议“" + meet.name + "”：";
+            word = fromname + word;
+            CreateNotice(toids, word, function (data) {
+                alert("会议通知“" + word + "”已经发送给所有的会议参加者！");
+                window.location.reload();
+            });
+        }
+    }
+</script>
+</html>

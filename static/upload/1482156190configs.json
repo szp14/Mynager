@@ -1,0 +1,14 @@
+{
+  "SECRET_KEY": "69faf9a18621ce06961fc47e323d61ff",
+  "DEBUG": true,
+  "IGNORE_WECHAT_SIGNATURE": false,
+  "WECHAT_TOKEN": "xuwm14",
+  "WECHAT_APPID": "wxf1e61ae540543fdc",
+  "WECHAT_SECRET": "69faf9a18621ce06961fc47e323d61ff",
+  "DB_NAME": "mynagerDB",
+  "DB_USER": "root",
+  "DB_PASS": "xuwm2014",
+  "DB_HOST": "127.0.0.1",
+  "DB_PORT": "3306",
+  "SITE_DOMAIN": "http://59.66.138.79"
+}

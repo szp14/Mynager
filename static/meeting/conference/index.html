@@ -1,0 +1,172 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="utf-8">
+	<title>会议申请</title>
+	<link rel="stylesheet" href="/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/css/base.css">
+	<link rel="stylesheet" href="/css/datepicker.css">
+	<script type="text/javascript" src="/js/jquery-3.1.0.min.js"></script>
+	<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/js/base.js"></script>
+	<script type="text/javascript" src="/js/bootstrap-datepicker.js"></script>
+	<script type="text/javascript">
+		$(function () {
+			$(".datepicker").datepicker({
+				language: "zh-CN",
+				autoclose: true,
+				clearBtn: true,
+				todayBtn: true,
+				format: "yyyy-mm-dd"
+			});
+		});
+	</script>
+</head>
+<body>
+<div id="container">
+	<div id="header">
+		<ul class="nav navbar-nav">
+			<li><a href="/user/homepage"><span class="glyphicon glyphicon-home"> 主页</span></a></li>
+		</ul>
+		<b>会议申请</b>
+		<div class="clear"></div>
+	</div>
+	<div class="section">
+		<div class="section_header">会议申请</div>
+		<div class="line">
+			<div class="line_member">会议名称</div>
+			<input class="line_member base_input long_input form-control" id="meet_name" type="text" name=""/>
+			<div class="clear"></div>
+		</div>
+		<div class="line">
+			<div class="line_member">会议类型</div>
+			<input class="line_member base_input long_input form-control" id="meet_type" type="text" name=""/>
+			<div class="clear"></div>
+		</div>
+		<div class="line">
+			<div class="line_member">举办地点</div>
+			<input class="line_member base_input long_input form-control" id="meet_place" type="text" name=""/>
+			<div class="clear"></div>
+		</div>
+		<div class="line">
+			<div class="line_member">最大人数</div>
+			<input class="line_member base_input long_input form-control" id="people_num" type="text" name=""/>
+			<div class="clear"></div>
+		</div>
+		<div class="line">
+			<div class="line_member">联系方式</div>
+			<input class="line_member base_input long_input form-control" id="phone_num" type="text" name=""/>
+			<div class="clear"></div>
+		</div>
+		<div class="line">
+			<div class="line_member">开始时间</div>
+			<input type="text" class="datepicker line_member base_input form-control" id="start_time" placeholder="请选择日期" />
+			<div class="line_member">结束时间</div>
+			<input type="text" class="datepicker line_member base_input form-control" id="end_time" placeholder="请选择日期" />
+			<div class="clear"></div>
+		</div>
+		<div class="line">
+			<div class="line_member">会议简介</div>
+			<textarea class="line_member base_textarea form-control" id="meet_brief" rows="4" name=""></textarea>
+			<div class="clear"></div>
+		</div>
+		<div class="line">
+			<div class="line_member">会议附件</div>
+			<div class="line_member">
+				<div class="subline">
+					<input class="" type="file" name="headimg" id="UploadFile"/>
+				</div>
+			</div>
+			<div class="clear"></div>
+		</div>
+		<div class="line">
+			<div class="line_member">会议附图</div>
+			<input class="line_member" type="file" name="" id="UploadImg"/>
+			<div class="clear"></div>
+		</div>
+		<div class="line">
+			<input class="line_member btn btn-default single_btn" type="button" value="发布" onclick="NewMeeting()"/>
+			<div id="warning"></div>
+			<div class="clear"></div>
+        </div>
+	</div>
+</div>
+</body>
+<script>
+    $('#img').on('change', function () {
+        console.log($("#file").prop("files"));
+    });
+    function NewMeeting() {
+        var transdata = {
+            'meeting_type': $("#meet_type").val(),
+            'name': $("#meet_name").val(),
+            'max_people_num': $("#people_num").val(),
+            'phone_num': $("#phone_num").val(),
+            'description': $("#meet_brief").val(),
+            'start_time':$("#start_time").val(),
+            'end_time':$("#end_time").val(),
+            'place':$("#meet_place").val(),
+            'uploadpic':$("#UploadImg").prop("files"),
+            'uploadfile':$("#UploadFile").prop("files")
+        };
+        if(transdata['meeting_type'] == '' || transdata['name'] == '' || transdata['max_people_num'] == ''
+                || transdata['description'] == '' || transdata['start_time'] == '' || transdata['phone_num'] == ''
+                || transdata['end_time'] == '' || transdata['place'] == '' ){
+			document.getElementById("warning").innerHTML='<div class="warning alert alert-danger alert-dismissable">\
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;\
+			</button>不能有空的输入框！</div>';
+            //alert("不能有空的输入框！");
+            return;
+        }
+		if(transdata['start_time'] > transdata['end_time']){
+			document.getElementById("warning").innerHTML='<div class="warning alert alert-danger alert-dismissable">\
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;\
+			</button>开始时间不能晚于结束时间！</div>';
+			return;
+		}
+		var myDate = new Date();
+		if(myDate.toLocaleDateString().replace(/\//g,'-') >= transdata['start_time']) {
+			document.getElementById("warning").innerHTML='<div class="warning alert alert-danger alert-dismissable">\
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;\
+			</button>开始时间应晚于当前时间！</div>';
+			return;
+		}
+        if(transdata['uploadpic'].length < 1){
+			document.getElementById("warning").innerHTML='<div class="warning alert alert-danger alert-dismissable">\
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;\
+			</button>必须选择会议配图！</div>';
+            //alert("必须选择会议配图！");
+            return;
+        }
+        var ls = transdata['uploadpic'][0].name.split(".");
+        var pic_type = ls[ls.length - 1].toLowerCase();
+        if(isNaN(transdata['phone_num']) || isNaN(transdata['max_people_num'])) {
+			document.getElementById("warning").innerHTML='<div class="warning alert alert-danger alert-dismissable">\
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;\
+			</button>数字格式不正确，请检查！</div>';
+            //alert("数字格式不正确，请检查！");
+            return;
+        }
+        if(pic_type != 'png' && pic_type != 'bmp' && pic_type != 'gif' && pic_type != 'jpg' && pic_type != 'jpeg') {
+			document.getElementById("warning").innerHTML='<div class="warning alert alert-danger alert-dismissable">\
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;\
+			</button>不支持的图片格式！</div>';
+            //alert("不支持的图片格式！");
+            return;
+        }
+        var form1 = new FormData();
+        for(var i in transdata) {
+            if(i == "uploadfile" || i == "uploadpic") {
+                if(transdata[i].length > 0)
+                    form1.append(i, transdata[i][0]);
+                continue;
+            }
+            form1.append(i, transdata[i]);
+        }
+        api.postForm("/api/u/meeting/create", form1, function () {
+            alert("申请会议成功，正在等待管理员审核，您可以在发布方界面查看会议状态！");
+            window.location.href="/user/homepage";
+        }, dftFail);
+    }
+</script>
+</html>

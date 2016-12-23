@@ -1,0 +1,113 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>会议查询</title>
+  <link rel="stylesheet" href="/css/bootstrap.min.css">  
+  <link rel="stylesheet" href="/css/base.css">
+  <script type="text/javascript" src="/js/jquery-3.1.0.min.js"></script>
+  <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/3rd/swig.js"></script>
+  <script type="text/javascript" src="/js/base.js"></script>
+</head>
+<body>
+<div id="container">
+  <div id="header">
+    <ul class="nav navbar-nav">
+      <li><a href="/user/homepage"><span class="glyphicon glyphicon-home"> 主页</span></a></li>
+    </ul>
+    <b>会议查询</b>
+    <div class="clear"></div>
+  </div>
+  <div class="section" id="show_list"></div>
+</div>
+</body>
+<script type="text/template" id="tpl-show_list">
+    <div class="section_header">会议列表</div>
+    <div class="line">
+      <div class="line_member">关键词:</div>
+      <div class="input-group long_input line_member">
+        <input class="form-control" type="text" id="key_word" value="{{ key_word }}">
+        <span class="input-group-btn">
+          <button class="btn btn-default" type="button" onclick="SearchMeeting()">搜索</button>
+        </span>
+      </div>
+	  <div id="warning"></div>
+      <div class="clear"></div>
+    </div></br>
+    {% for meet in meetings %}
+    <div class="search_block">
+      <img class="search_img" src="{{ meet.pic_url }}">
+      <div class="search_name"><p>{{ meet.name }}</p></div>
+      <div class="search_intro"><p>{{ meet.description }}</p></div>
+      <div class="btn-group item_btn">
+        <button type="button" class="btn btn-default" onclick="window.open('/meeting/detail?id={{ meet.id }}')">查看详情</button>
+        {% if meet.relation == 0 %}
+              <button type="button" class="btn btn-default" onclick="WithMeeting({{ meet.id }}, 1)">报名参加</button>
+          {% elif meet.relation == 1 %}
+              <button type="button" class="btn btn-default" onclick="WithMeeting({{ meet.id }}, 0)">取消报名</button>
+          {% elif meet.relation == 2 %}
+              <button type="button" class="btn btn-default" onclick="WithMeeting({{ meet.id }}, 3)">接受邀请</button>
+          {% elif meet.relation == 3 %}
+              <button type="button" class="btn btn-default" onclick="WithMeeting({{ meet.id }}, 0)">退出会议</button>
+          {% endif %}
+      </div>
+      <div class="clear"></div>
+    </div>
+    {% endfor %}
+    <div class="clear"></div>
+    <div class="pages">
+      <ul class="pagination">
+        {% if page_index > 1 %}
+           <li><a onclick="GetAllList({{ page_index }} - 1)" style="cursor: pointer">&laquo;</a></li>
+         {% endif %}
+        {% for page in pages %}
+            <li id="pagenum{{ page }}"><a onclick="GetAllList({{ page }})" style="cursor: pointer">{{ page }}</a></li>
+        {% endfor %}
+        {% if page_index < total_page %}
+            <li><a onclick="GetAllList({{ page_index }} + 1)" style="cursor: pointer">&raquo;</a></li>
+        {% endif %}
+      </ul>
+    </div>
+</script>
+<script type="text/javascript">
+    var meetings, page_index, total_page, key_word = urlParam.key_word, pages;
+    $(function () {
+        GetAllList(1);
+    });
+    function GetAllList(index) {
+         api.post("/api/u/meeting/list", { "meeting_num": 12, "page_index": index, "key_word": key_word }, function (data) {
+             if(data.status == false) {
+                alert("该页不存在！");
+                return;
+             }
+             total_page = data.total_page;
+             meetings = data.list;
+             pages = new Array(total_page);
+             page_index = index;
+             for(var i = 0; i < total_page; i++)
+                pages[i] = i + 1;
+             RenderTpl("show_list", { meetings, page_index, total_page, key_word });
+             for (var j = 1; i <= total_page; i++) {
+             if($("#pagenum" + i).hasClass("active"))
+                 $("#pagenum" + i).removeClass("active");
+        }
+        $("#pagenum" + index).addClass("active");
+        }, dftFail);
+    }
+    function SearchMeeting() {
+        var key_word = $("#key_word").val();
+        key_word = key_word.trim();
+        if(key_word.length == 0)
+                return;
+        if(key_word.length > 20) {
+			document.getElementById("warning").innerHTML='<div class="warning alert alert-danger alert-dismissable">\
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;\
+			</button>关键词长度过长！</div>';
+            //alert("关键词长度过长！");
+            return;
+        }
+        window.location.href = "/user/search?key_word=" + key_word;
+    }
+</script>
+</html>

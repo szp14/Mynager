@@ -3,20 +3,19 @@
 <head>
 	<meta charset="utf-8">
 	<title>主页</title>
-	<link rel="stylesheet" href="/css/bootstrap.min.css">  
+	<link rel="stylesheet" href="/css/bootstrap.min.css">
 	<link rel="stylesheet" href="/css/base.css">
 	<script type="text/javascript" src="/js/jquery-3.1.0.min.js"></script>
-	<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="/3rd/swig.js"></script>
-	<script type="text/javascript" src="/js/basicapi.js"></script>
+	<script type="text/javascript" src="/js/base.js"></script>
 	<script type="text/javascript" src="/js/homepage.js"></script>
 </head>
 <body>
 <div id="container">
-	<div id="header">
-		<span>主页</span>
-		<div class="header_right_item">登录</div>
-		<div class="clear"></div>
+	<div id="header"></div>
+	<div class="hp_carousel">
+		<div id="myCarousel" class="carousel slide"></div>
 	</div>
 	<div class="section">
 		<div class="homepage_intro">
@@ -24,82 +23,172 @@
 			<p>通过Mynager：</p>
 			<p>作为活动发布方你可以发布会议活动并邀请用户参加或者接受用户报名</p>
 			<p>作为活动参与者你可以接受会议活动邀请或者报名参加</p>
-			<p>先这么瞎逼一写，之后再说</p>
 		</div>
 		<div class="clear"></div>
-		<div class="line">
-			<input class="line_member btn btn-default" type="button" value="登陆已有帐号" onclick=""/>
-			<input class="line_member btn btn-default" type="button" value="注册新账号" onclick=""/>
-			<input class="line_member btn btn-default" type="button" value="进入发布方界面" onclick=""/>
-			<input class="line_member btn btn-default" type="button" value="申请新会议" onclick=""/>
-			<input class="line_member btn btn-default" type="button" value="进入个人中心" onclick=""/>
-			<div class="clear"></div>
-			//不同状态的用户（未登录、发布方、参与者）显示不同按钮
-		</div>
+		<div class="line" id="showbutton"></div>
 	</div>
-	<div class="section">
-		<div class="section_header">会议列表</div>
-		<div class="line">
-			<div class="line_member">关键词:</div>
-			<div class="input-group long_input line_member">
-				<input class="form-control" type="text">
-				<span class="input-group-btn">
-					<button class="btn btn-default" type="button">搜索</button>
-				</span>
-			</div>
-			<div class="clear"></div>
-		</div></br>
-		<div id="meeting_lists"></div>
-		<div class="pages" id="page_nums"></div>
-	</div>
+    <div class="section" id="meeting_lists"></div>
 </div>
-<script type="text/template" id="tpl-page_nums">
-    <ul class="pagination">
-    <li><a href="#">&laquo;</a></li>
-        <li><a href="#">{{ page_index }}</a></li>
-        <li><a href="#">&raquo;</a></li>
-    </ul>
+<script type="text/template" id="tpl-myCarousel">
+    <!-- 轮播（Carousel）指标 -->
+    <ol class="carousel-indicators">
+        {% for num in shownums %}
+            <li data-target="#myCarousel" data-slide-to="{{ num }}" {% if num == 1 %} class="active" {% endif %}></li>
+        {% endfor %}
+    </ol>
+    <!-- 轮播（Carousel）项目 -->
+    <div class="carousel-inner">
+        {% for meet in showmeets %}
+            <div class="item {% if meet == showmeets[0] %} active {% endif %} nomargin">
+                <img style="height: 500px; width: 960px" src="{{ meet.pic_url }}">
+                <div class="carousel-caption">{{ meet.name }}</div>
+            </div>
+        {% endfor %}
+    </div>
+    <!-- 轮播（Carousel）导航 -->
+    <a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+    <a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
 </script>
 <script type="text/template" id="tpl-meeting_lists">
+    <div class="section_header">会议列表</div>
+    <div class="line">
+      <div class="line_member">关键词:</div>
+      <div class="input-group long_input line_member">
+        <input class="form-control" id="key_word" type="text">
+        <span class="input-group-btn">
+          <button class="btn btn-default" type="button" onclick="SearchMeeting()">搜索</button>
+        </span>
+      </div>
+	  <div id="warning"></div>
+      <div class="clear"></div>
+    </div></br>
     {% for meet in meetings %}
-    <div class="hp_item">
-        <div class="item_name"><p>{{ meet.name }}</p></div>
-        <div class="hp_item_intro"><p>{{ meet.description }}</p></div>
-        <div class="btn-group item_btn">
-            <button type="button" class="btn btn-default">查看详情</button>
-            <button type="button" class="btn btn-default">报名参加</button>
-        </div>
-        <div class="clear"></div>
+    <div class="search_block">
+      <img class="search_img" src="{{ meet.pic_url }}">
+      <div class="search_name"><p>{{ meet.name }}{{ meet.status }}</p></div>
+      <div class="search_intro"><p>{{ meet.description }}</p></div>
+      <div class="btn-group item_btn">
+        <button type="button" class="btn btn-default" onclick="window.open('/meeting/detail?id={{ meet.id }}')">查看详情</button>
+          {% if meet.relation == 0 %}
+              <button type="button" class="btn btn-default" onclick="WithMeeting({{ meet.id }}, 1)">报名参加</button>
+          {% elif meet.relation == 1 %}
+              <button type="button" class="btn btn-default" onclick="WithMeeting({{ meet.id }}, 0)">取消报名</button>
+          {% elif meet.relation == 2 %}
+              <button type="button" class="btn btn-default" onclick="WithMeeting({{ meet.id }}, 3)">接受邀请</button>
+          {% elif meet.relation == 3 %}
+              <button type="button" class="btn btn-default" onclick="WithMeeting({{ meet.id }}, 0)">退出会议</button>
+          {% endif %}
+      </div>
+      <div class="clear"></div>
     </div>
     {% endfor %}
+    <div class="clear"></div>
+    <div class="pages">
+      <ul class="pagination">
+         {% if page_index > 1 %}
+           <li><a onclick="GetAllList({{ page_index }} - 1)" style="cursor: pointer">&laquo;</a></li>
+         {% endif %}
+        {% for page in pages %}
+            <li id="pagenum{{ page }}"><a onclick="GetAllList({{ page }})" style="cursor: pointer">{{ page }}</a></li>
+        {% endfor %}
+        {% if page_index < total_page %}
+            <li><a onclick="GetAllList({{ page_index }} + 1)" style="cursor: pointer">&raquo;</a></li>
+        {% endif %}
+      </ul>
+    </div>
+</script>
+<script type="text/template" id="tpl-header">
+    <b>主页</b>
+    <ul class="nav navbar-nav navbar-right nomargin">
+        {% if user_type == 0 %}
+           <li><a href="/user/login"><span class="glyphicon glyphicon-user">登录</span></a></li>
+        {% else %}
+           <li><a onclick="logout()"><span class="glyphicon glyphicon-user" style="cursor: pointer">注销登录</span></a></li>
+        {% endif %}
+    </ul>
+    {% if user_type != 0 %}
+    <img class="hp_headimg img-circle" src="/img/image.jpg">
+    <ul class="nav navbar-nav">
+      <li><a href="/user/center">{{ user_name }}</a></li>
+    </ul>
+    {% endif %}
+    <div class="clear"></div>
+</script>
+<script type="text/template" id="tpl-showbutton">
+  <input class="line_member btn btn-default" type="button" value="注册新账号" onclick="window.location.href='/user/register'"/>
+  {% if user_type == 3 %}
+      <input class="line_member btn btn-default" type="button" value="会议管理" onclick="window.location.href='/admin/meeting'"/>
+      <input class="line_member btn btn-default" type="button" value="用户管理" onclick="window.location.href='/admin/user'"/>
+  {% elif user_type == 2 %}
+      <input class="line_member btn btn-default" type="button" value="进入发布方界面" onclick="window.location.href='/publisher/meetings'"/>
+      <input class="line_member btn btn-default" type="button" value="申请新会议" onclick="window.open('/meeting/conference')"/>
+  {% endif %}
+  <div class="clear"></div>
 </script>
 </body>
 <script type="text/javascript">
-    var total_page = 0, page_index = 0, meetings = [];
+ 	var total_page = 0, page_index = 0, meetings = [], user_type = 0, user_name = 0, pages, showmeets=[], shownums;
 function GetAllList(index) {
-    api.get('/api/u/meeting/list', {"meeting_num": meeting_num, "page_index": index}, function (data) {
+    api.get('/api/u/meeting/list', {"meeting_num": 12, "page_index": index, "status": -1}, function (data) {
         //status:状态, total_page:总页数, list:会议信息列表
         if (data[status] == false) {
             alert("获取会议列表错误，可能该页会议不存在！");
             return;
         }
         page_index = index;
+        total_page = data["total_page"];
+        pages = new Array(total_page);
+        for(var i = 0; i < total_page; i++)
+            pages[i] = i + 1;
         meetings = data["list"];
-        $("#page_nums").html(swig.render($("#tpl-page_nums").html(), { page_index }));
-        $("#meeting_lists").html(swig.render($("#tpl-meeting_lists").html(), { meetings }))
+        RenderTpl("meeting_lists", { meetings, page_index, total_page, pages });
+        for (var j = 1; i <= total_page; i++) {
+            if($("#pagenum" + i).hasClass("active"))
+                $("#pagenum" + i).removeClass("active");
+        }
+        $("#pagenum" + index).addClass("active");
     }, dftFail);
 }
-
-function SearchMeeting(key_word, page_index, fun0) {
-    api.post('/api/u/meeting/list', {"key_word": key_word, "meeting_num": meeting_num, "page_index": page_index}, function (data) {
-        fun0(data);
-    }, dftFail);
-}
-
-$(function () {
-    GetAllList(1);
+    function SearchMeeting() {
+        var key_word = $("#key_word").val();
+        key_word = key_word.trim();
+        if(key_word.length == 0)
+                return;
+        if(key_word.length > 20) {
+			document.getElementById("warning").innerHTML='<div class="warning alert alert-danger alert-dismissable">\
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;\
+			</button>关键词长度过长！</div>';
+            //alert("关键词长度过长！");
+            return;
+        }
+        window.location.href = "/user/search?key_word=" + key_word;
+    }
+	$(function () {
+        if (urlParam.search)
+            console.log(urlParam.search);
+        GetAllList(1);
+        api.get('/api/u/meeting/list', {"meeting_num": 5, "page_index": 1, "status": -1}, function (data) {
+            //status:状态, total_page:总页数, list:会议信息列表
+            if (data[status] == false) {
+                alert("获取会议列表错误，可能该页会议不存在！");
+                return;
+            }
+            showmeets = data["list"];
+            shownums = new Array(showmeets.length);
+            for(var i = 0; i < showmeets.length; i++){
+                shownums[i] = i + 1;
+            }
+            $("#myCarousel").html(swig.render($("#tpl-myCarousel").html(), { showmeets, shownums }));
+        }, dftFail);
+        api.get('/api/u/login', {}, function(data) {
+    	    user_type = data["type"];
+            if(user_type != 0)
+                user_name = data["name"];
+            $("#header").html(swig.render($("#tpl-header").html(), { user_type, user_name }));
+            $("#showbutton").html(swig.render($("#tpl-showbutton").html(), { user_type }));
+  	    });
     //SearchMeeting("那些年", 2);
     //console.log(GetLogStatus());
-});
+	});
 </script>
 </html>

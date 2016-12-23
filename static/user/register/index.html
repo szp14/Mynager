@@ -3,21 +3,19 @@
 <head>
 	<meta charset="utf-8">
 	<title>注册</title>
-  <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">
-  <link rel="stylesheet" href="/css/base.css">
-  <script type="text/javascript" src="/js/jquery-3.1.0.min.js"></script>
-  <script type="text/javascript" src="/js/basicapi.js"></script>
+	<link rel="stylesheet" href="/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/css/base.css">
+	<script type="text/javascript" src="/js/jquery-3.1.0.min.js"></script>
+    <script type="text/javascript" src="/js/base.js"></script>
 	<script type="text/javascript" src="/js/bootstrap.min.js"></script>
 </head>
 <body>
 <div id="container">
 	<div id="header">
-		<div class="collapse navbar-collapse">
-			<ul class="nav navbar-nav">
-				<li><a href="/user/homepage"><span class="glyphicon glyphicon-home"> 主页</span></a></li>
-			</ul>
-			<b>注册</b>
-		</div>
+		<ul class="nav navbar-nav">
+			<li><a href="/user/homepage"><span class="glyphicon glyphicon-home"> 主页</span></a></li>
+		</ul>
+		<b>注册</b>
 		<div class="clear"></div>
 	</div>
 	<div class="log_part">
@@ -39,14 +37,15 @@
 		</div></br>
 		<form>
 			<div class="btn-group" data-toggle="buttons">
-				<label class="btn btn-default">
-					<input type="radio" name="options" id="check1">注册成为发布方
-				</label>
-				<label class="btn btn-default active">
-					<input type="radio" name="options" id="check2">注册成为参与者
-				</label>
+			<label class="btn btn-default">
+			  <input type="radio" name="options" id="check1">注册成为发布方
+			</label>
+			<label class="btn btn-default active">
+			  <input type="radio" name="options" id="check2">注册成为参与者
+			</label>
 			</div>
-		</form></br></br>
+		</form></br>
+		<div id="warning"></div></br>
 		<input class="btn btn-default" type="button" value="注册" onclick="register()"/>
 		<div class="clear"></div>
 	</div>
@@ -56,11 +55,17 @@
     function register() {
         var pass1 = $("#pass").val(), pass2 = $("#repass").val();
         if(pass1 != pass2) {
-            alert("您两次输入的密码不相同，请重新输入！");
+			document.getElementById("warning").innerHTML='<div class="warning_log alert alert-danger alert-dismissable">\
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;\
+			</button>您两次输入的密码不相同，请重新输入！</div>';
+            //alert("您两次输入的密码不相同，请重新输入！");
             return;
         }
         if(pass1.length < 3) {
-            alert("您的密码长度小于3，请重新输入！");
+			document.getElementById("warning").innerHTML='<div class="warning_log alert alert-danger alert-dismissable">\
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;\
+			</button>您的密码长度小于3，请重新输入！</div>';
+            //alert("您的密码长度小于3，请重新输入！");
             return;
         }
         var radios = $("[name='options']");
@@ -74,7 +79,18 @@
             "account_pass": pass1,
             "user_type": user_type
         };
+        if(dic1["account_name"].length > 10) {
+			document.getElementById("warning").innerHTML='<div class="warning_log alert alert-danger alert-dismissable">\
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;\
+			</button>用户名长度大于10，请重新输入！</div>';
+            //alert("用户名长度大于10，请重新输入！");
+            return;
+        }
         api.post('/api/u/register', dic1, function() {
+            api.post('/api/u/login', {
+                "username": dic1["account_name"],
+                "password": pass1
+            });
             alert("注册成功，即将跳转到主界面！");
             window.location.href = "/user/homepage";
         }, dftFail);

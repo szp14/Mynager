@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>个人信息</title>
+  <link rel="stylesheet" href="/css/bootstrap.min.css">  
+  <link rel="stylesheet" href="/css/base.css">
+  <script type="text/javascript" src="/js/jquery-3.1.0.min.js"></script>
+  <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/3rd/swig.js"></script>
+  <script type="text/javascript" src="/js/base.js"></script>
+</head>
+<body>
+<div id="container"></div>
+</body>
+<script type="text/template" id="tpl-container">
+    <div id="header">
+    <b>个人信息</b>
+    <div class="clear"></div>
+  </div>
+  <div class="section">
+    <img id="user_img" src="{{ user.pic_url }}">
+    <div id="user_name">{{ user.name }}</div>
+    <div id="user_intro">{{ user.description }}</div>
+    <div class="clear"></div>
+  </div>
+  <div class="section">
+    <div class="section_header">基本信息</div>
+    <div class="line">
+      <div class="line_member subline_prompt">账户名</div>
+      <div class="line_member">{{ user.account }}</div>
+      <div class="clear"></div>
+    </div>
+    <div class="line">
+      <div class="line_member subline_prompt">微信open_id</div>
+      <div class="line_member">{% if user.open_id != '' %} {{ user.open_id }} {% else %} 无 {% endif %}</div>
+      <div class="clear"></div>
+    </div>
+    <div class="line">
+      <div class="line_member subline_prompt">邮箱</div>
+      <div class="line_member">{% if user.email != '' %} {{ user.email }} {% else %} 无 {% endif %}</div>
+      <div class="clear"></div>
+    </div>
+    <div class="line">
+      <div class="line_member subline_prompt">电话</div>
+      <div class="line_member">{% if user.phone_num %} {{ user.phone_num }} {% else %} 无 {% endif %}</div>
+      <div class="clear"></div>
+    </div>
+    <div class="line">
+      <div class="line_member subline_prompt">实名认证</div>
+      <div class="line_member">{% if user.status == 0 %}未认证{% elif user.status == 1 %}等待审核{% else %}已认证{% endif %}</div>
+      <div class="clear"></div>
+    </div>
+  </div>
+</script>
+<script type="text/javascript">
+    var id = urlParam.id, user;
+    $(function () {
+        api.get("/a/user/detail", { "user_id": id }, function (data) {
+            user = data;
+            RenderTpl("container", { user });
+        }, dftFail);
+    })
+</script>
+</html>

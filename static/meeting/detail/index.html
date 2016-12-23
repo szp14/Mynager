@@ -1,0 +1,100 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="utf-8">
+	<title>会议详情</title>
+	<link rel="stylesheet" href="/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/css/base.css">
+	<script type="text/javascript" src="/js/jquery-3.1.0.min.js"></script>
+	<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/3rd/swig.js"></script>
+	<script type="text/javascript" src="/js/base.js"></script>
+</head>
+<body>
+<div id="container">
+	<div id="header">
+		<ul class="nav navbar-nav">
+			<li><a href="/user/homepage"><span class="glyphicon glyphicon-home"> 主页</span></a></li>
+		</ul>
+		<b>会议详情</b>
+		<div class="clear"></div>
+	</div>
+	<div class="section" id="meet_detail"></div>
+</div>
+</body>
+<script type="text/template" id="tpl-meet_detail">
+    <div class="section_header">会议详情</div>
+		<div class="line">
+			<div class="line_member">会议名称</div>
+			<div class="line_member">{{ showdata.name }}</div>
+			<div class="clear"></div>
+		</div>
+		<div class="line">
+			<div class="line_member">会议类型</div>
+			<div class="line_member">{{ showdata.meeting_type }}</div>
+			<div class="clear"></div>
+		</div>
+		<div class="line">
+			<div class="line_member">举办单位</div>
+			<div class="line_member">{{ showdata.organizer }}</div>
+			<div class="clear"></div>
+		</div>
+		<div class="line">
+			<div class="line_member">举办地点</div>
+			<div class="line_member">{{ showdata.place }}</div>
+			<div class="clear"></div>
+		</div>
+		<div class="line">
+			<div class="line_member">最大人数</div>
+			<div class="line_member">{{ showdata.max_people_num }}</div>
+			<div class="clear"></div>
+		</div>
+		<div class="line">
+			<div class="line_member">联系方式</div>
+			<div class="line_member">{{ showdata.phone_num }}</div>
+			<div class="clear"></div>
+		</div>
+		<div class="line">
+			<div class="line_member">开始时间</div>
+			<div class="line_member">{{ showdata.start_time }}</div>
+			<div class="line_member">结束时间</div>
+			<div class="line_member">{{ showdata.end_time }}</div>
+			<div class="clear"></div>
+		</div>
+		<div class="line">
+			<div class="line_member">会议简介</div>
+			<div class="line_member">{{ showdata.description }}</div>
+			<div class="clear"></div>
+		</div>
+		<div class="line">
+			<div class="line_member">会议附件</div>
+			<div class="line_member">
+                {% if showdata.attachs.length == 0 %}
+                    无
+                {% else %}
+				{% for attach in showdata.attachs %}
+                <div class="subline">
+                <a href="{{ attach.file_url }}" download="{{ attach.file_name }}">{{ attach.file_name }}({{ attach.file_size }})</a>
+                </div>
+                {% endfor %}
+                {% endif %}
+			</div>
+			<div class="clear"></div>
+		</div>
+		<div class="line">
+			<div class="line_member">会议附图</div>
+			<img class="line_member" src="{{ showdata.pic_url }}">
+			<div class="clear"></div>
+        </div>
+</script>
+<script type="text/javascript">
+    var showdata;
+    $(function () {
+        var meet_id = urlParam.id;
+        GetMeeting(meet_id, function (data) {
+            showdata = data;
+            RenderTpl("meet_detail", showdata);
+        });
+    })
+</script>
+</html>

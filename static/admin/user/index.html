@@ -1,0 +1,94 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>用户管理</title>
+  <link rel="stylesheet" href="/css/bootstrap.min.css">  
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" type="text/css" href="/css/base-y.css">
+  <script type="text/javascript" src="/js/jquery-3.1.0.min.js"></script>
+  <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/3rd/swig.js"></script>
+  <script type="text/javascript" src="/js/base.js"></script>
+</head>
+<body>
+<div id="container"></div>
+</body>
+<script type="text/template" id="tpl-container">
+<div id="header">
+    <ul class="nav navbar-nav">
+      <li><a href="/user/homepage"><span class="glyphicon glyphicon-home"> 主页</span></a></li>
+    </ul>
+    <b>用户管理</b>
+    <div class="clear"></div>
+  </div>
+  <div class="section">
+    <div class="section_header">实名认证批准</div>
+    <div class="list">
+        {% for user in users %}
+            {% if user.status == 1 %}
+      <div class="item">
+        <div class="item_name"><p>{{ user.true_name }}</p></div>
+        <div class="item_intro"><p>{{ user.idcard_num }}</p></div>
+        <a href="{{ user.image1 }}" target=“_blank“><img class="item_img" src="{{ user.image1 }}"></a>
+        <a href="{{ user.image2 }}" target=“_blank“><img class="item_img" src="{{ user.image2 }}"></a>
+        <div class="btn-group item_btn">
+          <button type="button" class="btn btn-default" onclick="ChangeStatus({{ user.id }}, 2)">同意</button>
+          <button type="button" class="btn btn-default" onclick="ChangeStatus({{ user.id }}, 0)">拒绝</button>
+        </div>
+        <div class="clear"></div>
+      </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+  </div>
+  <div class="section">
+    <div class="section_header">用户管理</div>
+    <div class="list">
+        {% for user in users %}
+      <div class="item">
+            <div class="item_name"><p>{{ user.name }}</p></div>
+            <div class="item_intro"><p>{{ user.description }}</p></div>
+            <div class="item_note"><p>{% if user.user_type == 3 %}管理员{% elif user.user_type == 2 %}发布方{% else %}普通用户{% endif %}</p></div>
+        <div class="btn-group item_btn">
+            <button type="button" class="btn btn-default" onclick="window.open('/admin/detail?id={{ user.id }}')">查看详情</button>
+            <button type="button" class="btn btn-default" onclick="DelUser({{ user.id }})">删除</button>
+        </div>
+        <div class="clear"></div>
+      </div>
+        {% endfor %}
+    </div>
+  </div>
+</script>
+<script type="text/javascript">
+    var users;
+    $(function () {
+        GetUserList();
+    });
+    function GetUserList() {
+        api.get("/a/user/list", {}, function (data) {
+            users = data;
+            RenderTpl("container", users);
+        }, dftFail)
+    }
+    function ChangeStatus(user_id, status) {
+        api.get("/api/u/user/verify", { "user_id": user_id, "status": status }, function () {
+            if (status == 2) {
+                var word = "管理员同意了您的实名认证。";
+                CreateNotice([ user_id ], word);
+            }
+            else if(status == 1) {
+                var word = "管理员拒绝了您的实名认证。";
+                CreateNotice([ user_id ], word);
+            }
+            alert("操作成功！");
+            GetUserList();
+        })
+    }
+    function DelUser(id) {
+        api.post("/a/user/detail", { "user_id": id }, function () {
+            GetUserList();
+        }, dftFail);
+    }
+</script>
+</html>

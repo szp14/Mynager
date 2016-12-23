@@ -1,0 +1,59 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="utf-8">
+	<title>发布方</title>
+	<link rel="stylesheet" href="/css/bootstrap.min.css">  
+	<link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" type="text/css" href="/css/base-y.css">
+	<script type="text/javascript" src="/js/jquery-3.1.0.min.js"></script>
+	<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/3rd/swig.js"></script>
+  <script type="text/javascript" src="/js/base.js"></script>
+</head>
+<body>
+<div id="container">
+	<div id="header">
+		<ul class="nav navbar-nav">
+			<li><a href="/user/homepage"><span class="glyphicon glyphicon-home"> 主页</span></a></li>
+		</ul>
+		<b>发布方</b>
+		<div class="clear"></div>
+	</div>
+	<div class="section" id="meet_list"></div>
+</div>
+</body>
+<script type="text/template" id="tpl-meet_list">
+    <div class="section_header">会议活动</div>
+		<div class="list">
+            {% for meet in meet_list %}
+			<div class="item">
+				<div class="item_name"><p>{{ meet.name }}</p></div>
+				<div class="item_intro"><p>{{ meet.description }}</p></div>
+				<div class="item_note"><p>{% if meet.status == 0 %}等待审核{% elif meet.status == 1 %}正常进行
+                    {% elif meet.status == -1 %}被管理员停止{% else %}未知状态{% endif %}</p></div>
+				<div class="btn-group item_btn">
+                    {% if meet.status > 0 %}
+                        <button type="button" class="btn btn-default" onclick="window.open('/publisher/participate?meet_id={{ meet.id }}')">参加者管理</button>
+                    {% endif %}
+					<button type="button" class="btn btn-default" onclick="DeleteMeeting({{ meet.id }}, GetList)">删除</button>
+					<button type="button" class="btn btn-default" onclick="window.open('/meeting/change?meet_id={{ meet.id }}')">修改</button>
+				</div>
+				<div class="clear"></div>
+			</div>
+            {% endfor %}
+		</div>
+</script>
+<script type="text/javascript">
+    var meet_list;
+    $(function () {
+        GetList();
+    });
+    function GetList() {
+        api.get("/api/u/publish/list/", {}, function (data) {
+            meet_list = data;
+            RenderTpl("meet_list", meet_list);
+        }, dftFail);
+    };
+</script>
+</html>

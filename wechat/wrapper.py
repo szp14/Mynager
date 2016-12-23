@@ -61,11 +61,11 @@ class WeChatHandler(object):
     def reply_single_news(self, article):
         return self.reply_news([article])
 
-    def get_message(self, name, **data):
+    def get_message(self, name, data):
         if name.endswith('.html'):
             name = name[: -5]
         return get_template('messages/' + name + '.html').render(dict(
-            handler=self, user=self.user, **data
+            handler=self, user=self.user, data=data
         ))
 
     def is_msg_type(self, check_type):
@@ -208,7 +208,6 @@ class WeChatView(BaseView):
         msg = self.parse_msg_xml(ET.fromstring(self.request.body))
         if 'FromUserName' not in msg:
             return self.error_message_handler(self, msg, None).handle()
-<<<<<<< HEAD
         user = MyUser.objects.all().filter(open_id=msg['FromUserName'])
         if not user:
             djangoUser, created = User.objects.get_or_create(username=msg['FromUserName'])
@@ -217,12 +216,6 @@ class WeChatView(BaseView):
                 self.logger.info('New user: %s', user.open_id)
         else:
             user = user[0]
-=======
-        djangoUser, created = User.objects.get_or_create(username = msg['FromUserName'])
-        user, created = MyUser.objects.get_or_create(open_id=msg['FromUserName'], user = djangoUser)
-        if created:
-            self.logger.info('New user: %s', user.open_id)
->>>>>>> origin/master
         try:
             for handler in self.handlers:
                 inst = handler(self, msg, user)

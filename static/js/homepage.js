@@ -1,4 +1,4 @@
-var meeting_num = 6;
+var meeting_num = 2;
 
 function getQueryParams(qs) {
     qs = qs.split('+').join(' ');
@@ -27,11 +27,9 @@ window.loginRequired = function (cb) {
 };
 
 window.logout = function () {
-    api.post('/api/a/logout', {}, null, dftFail, function () {
-        window.location.href = '/a/login?' + $.param({
-            next: window.location.pathname_with_query_string()
-        });
-    });
+    api.get('/api/u/logout', {}, function () {
+        window.location.href = '/user/login';
+    }, dftFail);
 };
 
 window.updateObj = function (obj, newObj) {

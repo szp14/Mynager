@@ -3,35 +3,34 @@
 <head>
 	<meta charset="utf-8">
 	<title>登录</title>
-	<link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">  
+	<link rel="stylesheet" href="/css/bootstrap.min.css">
 	<link rel="stylesheet" href="/css/base.css">
 	<script type="text/javascript" src="/js/jquery-3.1.0.min.js"></script>
-	<script type="text/javascript" src="/js/basicapi.js"></script>
+	<script type="text/javascript" src="/js/base.js"></script>
 	<script type="text/javascript" src="/js/bootstrap.min.js"></script>
 </head>
 <body>
 <div id="container">
 	<div id="header">
-		<div class="collapse navbar-collapse">
-			<ul class="nav navbar-nav">
-				<li><a href=""><span class="glyphicon glyphicon-home"> 主页</span></a></li>
-			</ul>
-			<b>登录</b>
-		</div>
+		<ul class="nav navbar-nav">
+			<li><a href="/user/homepage"><span class="glyphicon glyphicon-home"> 主页</span></a></li>
+		</ul>
+		<b>登录</b>
 		<div class="clear"></div>
 	</div>
 	<div class="log_part">
 		<h4>登录</h4></br></br>
 		<div class="subline">
 			<span class="log_prompt">用户名</span>
-			<input class="base_input form-control subline_file" type="text" id="username" name="" onsubmit="" />
+			<input class="base_input form-control subline_file" id="username" type="text" name="" onsubmit="" />
 			<div class="clear"></div>
 		</div>
 		<div class="subline">
 			<span class="log_prompt">密码</span>
-			<input class="base_input form-control subline_file" type="password" id="pass" name="" onsubmit="" />
+			<input class="base_input form-control subline_file" id="pass" type="password" name="" onsubmit="" />
 			<div class="clear"></div>
-		</div></br></br>
+		</div></br>
+		<div id="warning"></div></br>
 		<input class="btn btn-default" type="button" value="注册" onclick="window.location.href = '/user/register'"/>
 		<input class="btn btn-default" type="button" value="登录" onclick="sublog()"/>
 		<div class="clear"></div>
@@ -39,20 +38,34 @@
 </div>
 </body>
 <script type="text/javascript">
+$(function() {
+  api.get('/api/u/login', {}, function(data) {
+    if(data == 0)
+      return;
+    //window.location.href='/user/homepage';
+  })
+})
 function login(username, password) {
 	api.post('/api/u/login', {"username":username, "password":password}, function (data) {
  		if (data == 1) {
-    	window.location.href = "/user/homepage";
-  	}
-  	else {
-    	alert("账户名或者密码不正确，请重新输入！");
-  	}
+    	    window.location.href = "/user/homepage";
+  	    }
+  	    else {
+			document.getElementById("warning").innerHTML='<div class="warning_log alert alert-danger alert-dismissable">\
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;\
+			</button>账户名或者密码不正确，请重新输入！</div>';
+    	    //alert("账户名或者密码不正确，请重新输入！");
+  	    }
 	}, dftFail);
 }
 function sublog() {
 	var name = $("#username").val(), pass = $("#pass").val();
-	if (name == "" || pass == "")
-		alert("用户名或者密码不能为空！");
+	if (name == "" || pass == ""){
+		document.getElementById("warning").innerHTML='<div class="warning_log alert alert-danger alert-dismissable">\
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;\
+		</button>用户名或者密码不能为空！</div>';
+		//alert("用户名或者密码不能为空！");
+	}
 	else {
 		login(name, pass);
 	}

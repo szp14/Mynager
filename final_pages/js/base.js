@@ -59,3 +59,17 @@ window.updateDate = function (obj) {
         obj[arguments[i]] = new Date(obj[arguments[i]] * 1000);
     }
 };
+
+window.dftFail = function (errno, errmsg, e) {
+    var mes = errmsg.split(",");
+    if(mes[0] == "(1062")
+        alert("该账号已存在，请重新输入账户！");
+    else
+        alert(errmsg);
+};
+
+function GetLogStatus(fun0) {
+    api.get('/api/u/login', {}, function (data) {
+        fun0(data);
+    }, dftFail);
+}

@@ -3,8 +3,9 @@
 from wechat.wrapper import WeChatHandler
 from Mynager.settings import SITE_DOMAIN
 from django.utils import timezone
+import datetime
 from django.db import transaction
-from wechat.models import User
+from wechat.models import User, Notice, MyUser
 __author__ = "xyzS"
 
 
@@ -50,9 +51,7 @@ class UnbindOrUnsubscribeHandler(WeChatHandler):
             return self.reply_text("您还没有绑定Mynager账号，请先绑定账号！")
         self.user.open_id = ""
         self.user.save()
-        unbind = 0
         return self.reply_text(self.get_message('unbind_account'))
-
 
 class BindAccountHandler(WeChatHandler):
 
@@ -65,7 +64,18 @@ class BindAccountHandler(WeChatHandler):
 class GetMeetingHandler(WeChatHandler):
 
     def check(self):
-        return self.is_text('我的会议') or self.is_event_click(self.view.event_keys['account_bind'])
+        return self.is_text('我的通知') or self.is_event_click(self.view.event_keys['notice'])
 
     def handle(self):
-        return self.reply_text(self.get_message('bind_account'))
+        if self.user.user.username == self.user.open_id:
+            return self.reply_text("您还没有绑定Mynager账号，请先绑定账号！")
+        notices = Notice.objects.all().filter(touser=self.user)
+        if len(notices) == 0:
+            return self.reply_text("暂时没有通知！")
+        notes = [{
+            'content': notice.content,
+            'time': datetime.datetime.strftime(notice.time, '%Y-%m-%d %H:%M:%S'),
+            'count': i + 1
+        } for i, notice in enumerate(notices)]
+        return self.reply_text(self.get_message('notice', notes))
+

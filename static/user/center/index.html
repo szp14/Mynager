@@ -1,0 +1,477 @@
+﻿﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>个人中心</title>
+  <link rel="stylesheet" href="/css/bootstrap.min.css">  
+  <link rel="stylesheet" href="/css/base.css">
+  <script type="text/javascript" src="/js/jquery-3.1.0.min.js"></script>
+  <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/3rd/swig.js"></script>
+  <script type="text/javascript" src="/js/base.js"></script>
+  <link rel="stylesheet" href="/css/base-y.css">
+</head>
+<body>
+<div id="container"></div>
+<div class="modal fade" id="list_0" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" align="center"></div>
+<div class="modal fade" id="list_1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" align="center"></div>
+<div class="modal fade" id="list_2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" align="center"></div>
+<div class="modal fade" id="list_3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" align="center"></div>
+</body>
+<script type="text/template" id="tpl-container">
+<div id="header">
+    <ul class="nav navbar-nav">
+      <li><a href="/user/homepage"><span class="glyphicon glyphicon-home"> 主页</span></a></li>
+    </ul>
+    <b>个人中心</b>
+    <div class="clear"></div>
+  </div>
+  <div class="section">
+    <img id="user_img" src="{% if user_data.pic_url != '' %} {{ user_data.pic_url }} {% else %} /img/image.jpg {% endif %}">
+    <div id="user_name">{{ user_data.name }}</div>
+    <div id="user_intro">{{ user_data.description }}</div>
+    <div class="clear"></div>
+  </div>
+    <div class="section" id="meet_relation"></div>
+    <div class="section">
+    <div class="section_header">设置基本信息</div>
+    <div class="line">
+      <div class="line_member">账户名称</div>
+      <div class="line_member">{{ user_data.account }}</div>
+      <div class="clear"></div>
+    </div>
+    <div class="line">
+      <div class="line_member">绑定微信</div>
+      <input class="line_member mid_input form-control" title="微信用户的openid" disabled="disabled" type="text" name="" value="{% if user_data.open_id != '' %} {{ user_data.open_id }} {% else %}无 {% endif %}" onsubmit="" />
+      {% if user_data.open_id %}
+        <input class="line_member btn btn-default" type="button" value="解除绑定" onclick="DelOpen_id({{ user_data.id }})"/>
+      {% endif %}
+      <div class="clear"></div>
+    </div>
+    <div class="line">
+      <div class="line_member">设置头像</div>
+      <input class="line_member" id="head_img" type="file" name=""/>
+      <div class="clear"></div>
+    </div>
+    <div class="line">
+      <div class="line_member">设置昵称</div>
+      <input class="line_member base_input long_input form-control" id="name" value="{{ user_data.name }}" type="text" name=""/>
+      <div class="clear"></div>
+    </div>
+    <div class="line">
+      <div class="line_member">设置电话</div>
+      <input class="line_member base_input long_input form-control" id="phone_num" value="{{ user_data.phone_num }}" type="text" name="" onsubmit="" />
+      <div class="clear"></div>
+    </div>
+    <div class="line">
+      <div class="line_member">设置邮箱</div>
+      <input class="line_member base_input long_input form-control" id="email" value="{{ user_data.email }}" type="text" name="" onsubmit="" />
+      <div class="clear"></div>
+    </div>
+    <div class="line">
+      <div class="line_member">设置简介</div>
+      <textarea class="line_member base_textarea form-control" id="description" rows="3" name="">{{ user_data.description }}</textarea>
+      <div class="clear"></div>
+    </div>
+	<div class="line">
+      <input class="line_member btn btn-default single_btn" type="button" value="保存更改" onclick="change_base_message()"/>
+	  <div id="warning1"></div>
+      <div class="clear"></div>
+    </div>
+    </div>
+<div class="section">
+    <div class="section_header">设置账户信息</div>
+    <div class="line">
+      <div class="line_member">实名认证</div>
+      {% if user_data.user_status == 0 %}
+      <div class="line_member">
+        <div class="subline">
+          <span class="subline_prompt">姓名</span>
+          <input class="mid_input form-control subline_file" id="true_name" type="text" name="" onsubmit="" />
+          <div class="clear"></div>
+        </div>
+        <div class="subline">
+          <span class="subline_prompt">身份证号</span>
+          <input class="mid_input form-control subline_file" id="user_idnum" type="text" name="" onsubmit="" />
+          <div class="clear"></div>
+        </div>
+        <div class="subline">
+          <span class="subline_prompt">个人照片</span>
+          <input class="subline_file" id="user_image" type="file" name=""/>
+          <div class="clear"></div>
+        </div>
+        <div class="subline">
+          <span class="subline_prompt">身份证照片</span>
+          <input class="subline_file" id="idcard_image" type="file" name=""/>
+          <div class="clear"></div>
+        </div>
+      </div>
+	  <div class="line_member">
+        <div class="subline">
+          <input class="btn btn-default" type="button" value="申请实名认证" onclick="Verify()"/>
+        </div>
+        <div class="subline">
+          <div id="warning2"></div>
+        </div>
+      </div>
+       {% elif user_data.user_status > 0 %}
+          <div class="line_member">
+          {% if user_data.user_status == 1 %}
+          <div class="subline">
+            <span>实名认证进行中，正在等待管理员审核！</span>
+            <div class="clear"></div>
+            </div>
+              {% else %}
+              <div class="subline">
+            <span>实名认证已经通过！</span>
+            <div class="clear"></div>
+            </div>
+              {% endif %}
+            <div class="subline">
+            <span class="subline_prompt">姓名</span>
+            <input class="mid_input form-control subline_file" disabled="disabled" type="text" value="{{ user_data.true_name }}" name="" onsubmit="" />
+            <div class="clear"></div>
+            </div>
+        <div class="subline">
+          <span class="subline_prompt">身份证号</span>
+          <input class="mid_input form-control subline_file" disabled="disabled" type="text" value="{{ user_data.user_IDnum }}" name="" onsubmit="" />
+          <div class="clear"></div>
+        </div>
+      </div>
+      <input class="line_member btn btn-default" type="button" value="取消实名认证" onclick="CancelVerify()"/></br>
+        {% endif %}
+      <div class="clear"></div>
+    </div>
+    <div class="line">
+      <div class="line_member">修改密码</div>
+      <div class="line_member">
+        <div class="subline">
+          <span class="subline_prompt">旧密码</span>
+          <input class="mid_input form-control subline_file" type="password" id="old_pass" name="" onsubmit="" />
+          <div class="clear"></div>
+        </div>
+        <div class="subline">
+          <span class="subline_prompt">新密码</span>
+          <input class="mid_input form-control subline_file" type="password" id="new_pass" name="" onsubmit="" />
+          <div class="clear"></div>
+        </div>
+        <div class="subline">
+          <span class="subline_prompt">重复新密码</span>
+          <input class="mid_input form-control subline_file" type="password" id="re_pass" name="" onsubmit="" />
+          <div class="clear"></div>
+        </div>
+      </div>
+	  <div class="line_member">
+        <div class="subline">
+          <input class="btn btn-default" type="button" value="确认修改" onclick="ChangePass()"/>
+        </div>
+        <div class="subline">
+          <div id="warning3"></div>
+        </div>
+      </div>
+      <div class="clear"></div>
+    </div>
+  </div>
+</script>
+<script type="text/template" id="tpl-meet_relation">
+    <div class="section_header">会议活动信息</div>
+        <div class="line">
+            <div class="line_member line_prompt">当前共{{ notices.length }}个通知</div>
+                <button type="button" class="btn btn-link" data-toggle="modal" data-target="#list_0">查看</button>
+            <div class="clear"></div>
+        </div>
+        <div class="line">
+            <div class="line_member line_prompt">当前共{{ relation.rel3.length }}个已参加会议</div>
+                <button type="button" class="btn btn-link" data-toggle="modal" data-target="#list_1">查看</button>
+            <div class="clear"></div>
+        </div>
+        <div class="line">
+            <div class="line_member line_prompt">当前共{{ relation.rel1.length }}个报名</div>
+            <button type="button" class="btn btn-link" data-toggle="modal" data-target="#list_2">查看</button>
+            <div class="clear"></div>
+        </div>
+        <div class="line">
+            <div class="line_member line_prompt">当前共{{ relation.rel2.length }}个邀请</div>
+            <button type="button" class="btn btn-link" data-toggle="modal" data-target="#list_3">查看</button>
+            <div class="clear"></div>
+        </div>
+</script>
+<script type="text/template" id="tpl-list_0">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">通知列表</h4>
+            </div>
+            <table class="tablesize">
+              <tbody>
+              {% if notices.length == 0 %}
+              无
+              {% endif %}
+              {% for notice in notices %}
+              <tr align="center" valign="middle">
+                  <td class="tableitemsize">{{ notice.content }}······{{ notice.time }}</td>
+                  <td class="tableitemsize_2">
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-primary" onclick="DelNotice({{ notice.id }})">删除通知</button>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+              </tbody>
+          </table>
+          <div>
+      </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</script>
+<script type="text/template" id="tpl-list_1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">参加列表</h4>
+            </div>
+            <table class="tablesize">
+              <tbody>
+              {% if relation.rel3.length == 0 %}
+              无
+              {% endif %}
+              {% for rel in relation.rel3 %}
+              <tr align="center" valign="middle">
+                  <td class="tableitemsize"><p>您参加了会议《{{ rel.meet_name }}》!</p></td>
+                  <td class="tableitemsize_2">
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-primary" onclick="WithMeeting({{ rel.meet_id }}, 0)">退出会议</button>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+              </tbody>
+          </table>
+          <div>
+      </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</script>
+<script type="text/template" id="tpl-list_2">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">报名列表</h4>
+            </div>
+            <table class="tablesize">
+              <tbody>
+              {% if relation.rel1.length == 0 %}
+              无
+              {% endif %}
+              {% for rel in relation.rel1 %}
+              <tr align="center" valign="middle">
+                  <td class="tableitemsize"><p>您已经报名了会议《{{ rel.meet_name }}》，请等待审核！</p></td>
+                  <td class="tableitemsize_2">
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-primary" onclick="WithMeeting({{ rel.meet_id }}, 0)">取消报名</button>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+              </tbody>
+          </table>
+          <div>
+      </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</script>
+<script type="text/template" id="tpl-list_3">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">邀请列表</h4>
+            </div>
+            <table class="tablesize">
+              <tbody>
+              {% if relation.rel2.length == 0 %}
+              无
+              {% endif %}
+              {% for rel in relation.rel2 %}
+              <tr align="center" valign="middle">
+                  <td class="tableitemsize"><p>您受到了会议《{{ rel.meet_name }}》的邀请！</p></td>
+                  <td class="tableitemsize_2">
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-primary" onclick="WithMeeting({{ rel.meet_id }}, 3)">接受邀请</button>
+                      <button type="button" class="btn btn-primary" onclick="WithMeeting({{ rel.meet_id }}, 0)">拒绝邀请</button>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+              </tbody>
+          </table>
+          <div>
+      </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</script>
+<script type="text/javascript">
+    var user_data, relation, notices;
+    $(function () {
+        GetUserDetail(function (data) {
+            if(data["type"] == 0) {
+                alert("您尚未登录，请先进行登录操作！");
+                window.location.href = "/user/login";
+                return;
+            }
+            user_data = data;
+            RenderTpl("container", { user_data });
+        });
+        GetRelation();
+        GetNotice();
+    });
+    function change_base_message() {
+        var word, dic = {
+            "name": '',
+            "phone_num": '',
+            "email": '',
+            "description": ''
+        }, img = $("#head_img").prop("files"), form1 = new FormData();
+        for(word in dic){
+            dic[word] = $("#" + word).val();
+            form1.append(word, dic[word]);
+        }
+        if(img.length > 0) {
+            form1.append("img", img[0]);
+            var ls = img[0].name.split(".");
+            var pic_type = ls[ls.length - 1].toLowerCase();
+            if(pic_type != 'png' && pic_type != 'bmp' && pic_type != 'gif' && pic_type != 'jpg' && pic_type != 'jpeg') {
+				document.getElementById("warning1").innerHTML='<div class="warning alert alert-danger alert-dismissable">\
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;\
+				</button>不支持的图片格式！</div>';
+                //alert("不支持的图片格式！");
+                return;
+            }
+        }
+        if(isNaN(dic["phone_num"]) && dic["phone_num"]){
+			document.getElementById("warning1").innerHTML='<div class="warning alert alert-danger alert-dismissable">\
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;\
+			</button>电话号码必须为纯数字！</div>';
+            //alert("电话号码必须为纯数字！");
+            return;
+        }
+        api.postForm("/api/u/user/detail", form1, function () {
+            alert("信息修改成功！");
+            window.location.reload(true);
+        }, dftFail);
+    }
+    function Verify() {
+        var form1 = new FormData(), transdata = {
+            "true_name": $("#true_name").val(),
+            "user_idnum": $("#user_idnum").val(),
+            "user_image": $("#user_image").prop("files"),
+            "idcard_image": $("#idcard_image").prop("files")
+        };
+        if(transdata.true_name == '') {
+			document.getElementById("warning2").innerHTML='<div class="alert alert-danger alert-dismissable">\
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;\
+			</button>真实姓名不能为空！</div>';
+            //alert("真实姓名不能为空！");
+            return;
+        }
+        if(transdata.user_idnum.length < 15 || isNaN(transdata.user_idnum)) {
+			document.getElementById("warning2").innerHTML='<div class="alert alert-danger alert-dismissable">\
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;\
+			</button>身份证号码格式不正确！</div>';
+            //alert("身份证号码格式不正确！");
+            return;
+        }
+        if(transdata.user_image.length < 1 || transdata.idcard_image.length < 1) {
+			document.getElementById("warning2").innerHTML='<div class="alert alert-danger alert-dismissable">\
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;\
+			</button>个人或者身份证照片不能为空！</div>';
+            //alert("个人或者身份证照片不能为空！");
+            return;
+        }
+        var ls = transdata.user_image[0].name.split("."), ls1 = transdata.idcard_image[0].name.split(".");
+        var pic_type = ls[ls.length - 1].toLowerCase(), pic_type1 = ls1[ls1.length - 1].toLowerCase();
+        if(pic_type != 'png' && pic_type != 'bmp' && pic_type != 'gif' && pic_type != 'jpg' && pic_type != 'jpeg' && pic_type1 != 'png' && pic_type1 != 'bmp' && pic_type1 != 'gif' && pic_type1 != 'jpg' && pic_type1 != 'jpeg') {
+			document.getElementById("warning2").innerHTML='<div class="alert alert-danger alert-dismissable">\
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;\
+			</button>不支持的图片格式！</div>';
+            //alert("不支持的图片格式！");
+            return;
+        }
+        transdata.user_image = transdata.user_image[0];
+        transdata.idcard_image = transdata.idcard_image[0];
+        for(var word in transdata) {
+            form1.append(word, transdata[word]);
+        }
+        api.postForm("/api/u/user/verify", form1, function () {
+            alert("实名认证信息提交成功，等待管理员审核！");
+            window.location.reload();
+        }, dftFail)
+    }
+    function CancelVerify() {
+        api.get("/api/u/user/verify",{}, function () {
+            alert("实名认证已经被取消！");
+            window.location.reload();
+        })
+    }
+    function GetRelation() {
+        api.get("/api/u/relation/get", {}, function (data) {
+            relation = data;
+            RenderTpl("meet_relation", { relation, notices });
+            RenderTpl("list_1", { relation });
+            RenderTpl("list_2", { relation });
+            RenderTpl("list_3", { relation });
+        },dftFail)
+    }
+    function WithMeeting(meet_id, status) {
+        api.get("/api/u/relation/change", { "meet_id": meet_id, "relation": status }, function () {
+            GetRelation();
+        });
+    }
+    function ChangePass() {
+        var oldpass = $("#old_pass").val(), newpass = $("#new_pass").val(), repass = $("#re_pass").val();
+        if(newpass != repass) {
+			document.getElementById("warning3").innerHTML='<div class="alert alert-danger alert-dismissable">\
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;\
+			</button>两次输入的密码不一致，请重新输入！</div>';
+            //alert("两次输入的密码不一致，请重新输入！");
+            return;
+        }
+        api.post("/api/u/user/detail", { "old_pass": oldpass, "new_pass": newpass }, function () {
+            alert("密码修改成功，请您重新登录！");
+            window.location.href = "/user/login";
+        }, dftFail)
+    }
+    function GetNotice() {
+        api.get("/api/u/notice/message/", {}, function (data) {
+            notices = data;
+            RenderTpl("list_0", { notices });
+            RenderTpl("meet_relation", { relation, notices });
+        }, dftFail);
+    }
+    function DelNotice(id) {
+        api.get("/api/u/notice/create/", { "notice_id": id }, function (data) {
+            GetNotice();
+        }, dftFail);
+    }
+    function DelOpen_id(id) {
+        api.post("/api/u/user/detail", { open_id: '' }, function () {
+            window.location.reload();
+        }, dftFail)
+    }
+</script>
+</html>

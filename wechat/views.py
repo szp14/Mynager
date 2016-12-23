@@ -24,9 +24,7 @@ class CustomWeChatView(WeChatView):
         'account_bind': 'SERVICE_BIND',
         'help': 'SERVICE_HELP',
         'about': 'SERVICE_ABOUT',
-        'list': 'MEETING_LIST',
         'notice': 'MEETING_NOTICE',
-        'past_list': 'MEETING_OVER'
     }
 
     menu = {
@@ -52,24 +50,9 @@ class CustomWeChatView(WeChatView):
                 ]
             },
             {
-                "name": "我的会议",
-                "sub_button": [
-                    {
-                        "type": "click",
-                        "name": "会议列表",
-                        "key": event_keys['list'],
-                    },
-                    {
-                        "type": "click",
-                        "name": "会议通知",
-                        "key": event_keys['notice'],
-                    },
-                    {
-                        "type": "click",
-                        "name": "往期会议",
-                        "key": event_keys['past_list'],
-                    }
-                ]
+                "type": "click",
+                "name": "我的通知",
+                "key": event_keys['notice']
             }
         ]
     }
