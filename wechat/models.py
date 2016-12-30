@@ -30,6 +30,15 @@ class MyUser(models.Model):
         u.save()
         return u
 
+    @classmethod
+    def create_admin(cls):
+        q, isCreated = User.objects.get_or_create(username="newAdmin", password = "123456")
+        if(isCreated):
+            return
+        u = MyUser(user=q, user_type = MyUser.USER_ADMIN)
+        u.name = "管理员"
+        u.save()
+
     def change_information(self, dic):
         own_keys = [
             'user_type',

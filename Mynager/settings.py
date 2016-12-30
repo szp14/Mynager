@@ -14,7 +14,6 @@ import os
 import json
 import logging
 import urllib.parse
-#import djcelery
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -41,18 +40,13 @@ WECHAT_SECRET = CONFIGS['WECHAT_SECRET']
 
 ALLOWED_HOSTS = ['*']
 
-#djcelery.setup_loader()
 BROKER_URL = 'django://'
-# CELERY_ENABLE_UTC = False
-# CELERY_TIMEZONE = 'Asia/Shanghai'
 CELERYD_LOG_FILE= os.path.join(BASE_DIR, 'worker.log')
 CELERYBEAT_LOG_FILE = os.path.join(BASE_DIR, 'beat.log')
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 # Application definition
 
 INSTALLED_APPS = [
-    #'djcelery',
-    #'kombu.transport.django',
 
     'django.contrib.auth',
     'django.contrib.contenttypes',
