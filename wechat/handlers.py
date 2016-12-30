@@ -31,7 +31,7 @@ class AboutHandler(WeChatHandler):
         return self.is_text("关于") or self.is_event_click(self.view.event_keys['about'])
 
     def handle(self):
-        return self.reply_text(self.get_message('about_info'))
+        return self.reply_text(self.get_message('about_info', []))
 
 class HelpHandler(WeChatHandler):
 
@@ -39,7 +39,7 @@ class HelpHandler(WeChatHandler):
         return self.is_text("帮助") or self.is_event_click(self.view.event_keys['help'])
 
     def handle(self):
-        return self.reply_text(self.get_message('help_description'))
+        return self.reply_text(self.get_message('help_description', []))
 
 class UnbindOrUnsubscribeHandler(WeChatHandler):
 
@@ -51,7 +51,7 @@ class UnbindOrUnsubscribeHandler(WeChatHandler):
             return self.reply_text("您还没有绑定Mynager账号，请先绑定账号！")
         self.user.open_id = ""
         self.user.save()
-        return self.reply_text(self.get_message('unbind_account'))
+        return self.reply_text(self.get_message('unbind_account', []))
 
 class BindAccountHandler(WeChatHandler):
 
@@ -59,7 +59,7 @@ class BindAccountHandler(WeChatHandler):
         return self.is_text('绑定') or (self.is_event_click(self.view.event_keys['account_bind']) and self.user.user_type == 0)
 
     def handle(self):
-        return self.reply_text(self.get_message('bind_account'))
+        return self.reply_text(self.get_message('bind_account', []))
 
 class GetMeetingHandler(WeChatHandler):
 

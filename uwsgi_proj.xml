@@ -1,0 +1,7 @@
+<uwsgi>
+        <socket>127.0.0.1:8001</socket>
+        <chdir>/Users/szp/Desktop/szp/djangoPro/Mynager</chdir>
+        <module>wsgi</module>
+        <processes>4</processes> 
+        <daemonize>/Users/szp/Desktop/szp/djangoPro/Mynager/uwsgi.log</daemonize>
+</uwsgi>

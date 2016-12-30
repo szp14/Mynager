@@ -7,7 +7,7 @@ from Mynager.settings import MEDIA_ROOT, SITE_DOMAIN
 
 class MyUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    open_id = models.CharField(max_length=64, db_index=True)
+    open_id = models.CharField(max_length=64, default="", db_index=True)
     user_type = models.SmallIntegerField(default=0)
     user_status = models.SmallIntegerField(default=0)
     description = models.CharField(max_length=256)

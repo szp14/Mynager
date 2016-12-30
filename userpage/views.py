@@ -11,6 +11,7 @@ from urllib import request
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from Mynager.settings import MEDIA_ROOT, SITE_DOMAIN
+from wechat.tasks import *
 
 class MeetingListView(APIView):
     def get(self):
@@ -78,7 +79,7 @@ class MeetingListView(APIView):
 
     def post(self):
         self.check_input("meeting_num", "page_index", "key_word")
-        meetings = Meeting.objects.filter(status__gt=-1)
+        meetings = Meeting.objects.filter(status__gt=Meeting.STATUS_PENDING)
         num0 = int(self.input["meeting_num"])
         num1 = int(self.input["page_index"])
         key = self.input["key_word"]
@@ -451,7 +452,21 @@ class CreateNoticeView(APIView):
         to_ids = self.input["to_ids"]
         for to_id in to_ids:
             user = MyUser.objects.get(id=int(to_id))
-            Notice.CreateNotice(user, self.input["content"])
+            con = self.input["content"]
+            Notice.CreateNotice(user, con)
+            # create_task('NOTICE' + str(timezone.now()) + str(to_id), 'wechat.tasks.createNotice',
+            #             {
+            #                 'user_openid': user.open_id,
+            #                 'con': con,
+            #             },
+            #             {
+            #                 'month_of_year': timezone.now().month,
+            #                 'day_of_month': timezone.now().day,
+            #                 'hour': timezone.now().hour - 8,
+            #                 'minute': timezone.now().minute + 1,
+            #             })
+            if(user.open_id != ""):
+                createNotice(user.open_id, con)
 
     @login_required
     def get(self):

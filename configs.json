@@ -1,14 +1,14 @@
 {
-  "SECRET_KEY": "69faf9a18621ce06961fc47e323d61ff",
+  "SECRET_KEY": "ThisIsARandomStringWithLength=50!-----------------",
   "DEBUG": true,
   "IGNORE_WECHAT_SIGNATURE": false,
-  "WECHAT_TOKEN": "xuwm14",
-  "WECHAT_APPID": "wxf1e61ae540543fdc",
-  "WECHAT_SECRET": "69faf9a18621ce06961fc47e323d61ff",
+  "WECHAT_TOKEN": "ThisIsAWeChatTokenWhichCanBeARandomString",
+  "WECHAT_APPID": "wxdabd06386fa2c4b6",
+  "WECHAT_SECRET": "9ee29a4a07f2700b9433f795ec33b008",
   "DB_NAME": "mynagerDB",
   "DB_USER": "root",
-  "DB_PASS": "xuwm2014",
+  "DB_PASS": "525800",
   "DB_HOST": "127.0.0.1",
   "DB_PORT": "3306",
-  "SITE_DOMAIN": "http://59.66.138.79/wechat"
+  "SITE_DOMAIN": "http://183.172.153.11"
 }

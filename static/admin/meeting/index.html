@@ -95,7 +95,7 @@
     {% endfor %}
 </script>
 <script type="text/javascript">
-    var page_index = 0, meetings, meetings1, meeting_num = 6;
+    var page_index = 0, meetings, meetings1, meeting_num = 30;
     function GetAllList(index, stat) {
         api.get('/api/u/meeting/list', {"meeting_num": meeting_num, "page_index": index, "status": stat}, function (data) {
             //status:状态, total_page:总页数, list:会议信息列表
@@ -120,7 +120,8 @@
             alert("该会议已经被批准举行！");
             var word = "您的会议“" + meet_name + "”已经被批准举行！";
             CreateNotice([user_id], word);
-            window.location.reload(true);
+            GetAllList(1, 0);
+            GetAllList(1, 1);
         }, dftFail);
     }
     function Change(meet_id, stat) {

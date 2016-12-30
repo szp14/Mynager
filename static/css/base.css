@@ -184,9 +184,11 @@ input[type="button"]
 	min-width:200px;
 }
 .homepage_intro{
+	float:left;
 	margin-left:30px;
 	padding-top:30px;
 	min-height:200px;
+	width:600px;
 }
 .log_part{
 	width:600px;
@@ -232,6 +234,12 @@ input[type="button"]
 	width:960px;
 	height:500px;
 }
+.hp_2Dcode{
+	float:right;
+	width:180px;
+	height:180px;
+	margin:40px 40px -20px 0;
+}
 .hp_headimg{
 	width:35px;
 	height:35px;
@@ -262,6 +270,20 @@ input[type="button"]
 	float:left;
 	margin-left:10px;
 	font-size:14px;
+}
+.modal_line{
+	height:40px;
+	padding-top:10px;
+	margin-bottom:10px;
+}
+.modal_section{
+	width:700px;
+}
+.modal_item{
+    width:450px;
+    float:left;
+    margin:0 30px 0;
+	text-align:left;
 }
 .nomargin{
 	margin:0;

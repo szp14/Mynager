@@ -197,31 +197,21 @@
         </div>
 </script>
 <script type="text/template" id="tpl-list_0">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal_section">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title" id="myModalLabel">通知列表</h4>
             </div>
-            <table class="tablesize">
-              <tbody>
               {% if notices.length == 0 %}
               无
               {% endif %}
               {% for notice in notices %}
-              <tr align="center" valign="middle">
-                  <td class="tableitemsize">{{ notice.content }}······{{ notice.time }}</td>
-                  <td class="tableitemsize_2">
-                  <div class="modal-footer">
-                      <button type="button" class="btn btn-primary" onclick="DelNotice({{ notice.id }})">删除通知</button>
-                  </div>
-                </td>
-              </tr>
+              <div class="modal_line" align="center" valign="middle">
+                  <span class="modal_item">{{ notice.content }}······{{ notice.time }}</span>
+                  <button type="button" class="btn btn-primary" onclick="DelNotice({{ notice.id }})">删除通知</button>
+			  </div>
               {% endfor %}
-              </tbody>
-          </table>
-          <div>
-      </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
             </div>
@@ -229,31 +219,21 @@
     </div><!-- /.modal -->
 </script>
 <script type="text/template" id="tpl-list_1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal_section">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title" id="myModalLabel">参加列表</h4>
             </div>
-            <table class="tablesize">
-              <tbody>
               {% if relation.rel3.length == 0 %}
               无
               {% endif %}
               {% for rel in relation.rel3 %}
-              <tr align="center" valign="middle">
-                  <td class="tableitemsize"><p>您参加了会议《{{ rel.meet_name }}》!</p></td>
-                  <td class="tableitemsize_2">
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-primary" onclick="WithMeeting({{ rel.meet_id }}, 0)">退出会议</button>
-                  </div>
-                </td>
-              </tr>
+              <div class="modal_line" align="center" valign="middle">
+                  <p class="modal_item">您参加了会议《{{ rel.meet_name }}》!</p>
+                  <button type="button" class="btn btn-primary" onclick="WithMeeting({{ rel.meet_id }}, 0)">退出会议</button>
+              </div>
               {% endfor %}
-              </tbody>
-          </table>
-          <div>
-      </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
             </div>
@@ -261,31 +241,21 @@
     </div><!-- /.modal -->
 </script>
 <script type="text/template" id="tpl-list_2">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal_section">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title" id="myModalLabel">报名列表</h4>
             </div>
-            <table class="tablesize">
-              <tbody>
               {% if relation.rel1.length == 0 %}
               无
               {% endif %}
               {% for rel in relation.rel1 %}
-              <tr align="center" valign="middle">
-                  <td class="tableitemsize"><p>您已经报名了会议《{{ rel.meet_name }}》，请等待审核！</p></td>
-                  <td class="tableitemsize_2">
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-primary" onclick="WithMeeting({{ rel.meet_id }}, 0)">取消报名</button>
-                  </div>
-                </td>
-              </tr>
+              <div class="modal_line" align="center" valign="middle">
+                  <p class="modal_item">您已经报名了会议《{{ rel.meet_name }}》，请等待审核！</p>
+                  <button type="button" class="btn btn-primary" onclick="WithMeeting({{ rel.meet_id }}, 0)">取消报名</button>
+              </div>
               {% endfor %}
-              </tbody>
-          </table>
-          <div>
-      </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
             </div>
@@ -293,32 +263,22 @@
     </div><!-- /.modal -->
 </script>
 <script type="text/template" id="tpl-list_3">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal_section">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title" id="myModalLabel">邀请列表</h4>
             </div>
-            <table class="tablesize">
-              <tbody>
               {% if relation.rel2.length == 0 %}
               无
               {% endif %}
               {% for rel in relation.rel2 %}
-              <tr align="center" valign="middle">
-                  <td class="tableitemsize"><p>您受到了会议《{{ rel.meet_name }}》的邀请！</p></td>
-                  <td class="tableitemsize_2">
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-primary" onclick="WithMeeting({{ rel.meet_id }}, 3)">接受邀请</button>
-                      <button type="button" class="btn btn-primary" onclick="WithMeeting({{ rel.meet_id }}, 0)">拒绝邀请</button>
-                  </div>
-                </td>
-              </tr>
+              <div class="modal_line" align="center" valign="middle">
+                  <p class="modal_item">您受到了会议《{{ rel.meet_name }}》的邀请！</p>
+                  <button type="button" class="btn btn-primary" onclick="WithMeeting({{ rel.meet_id }}, 3)">接受</button>
+                  <button type="button" class="btn btn-primary" onclick="WithMeeting({{ rel.meet_id }}, 0)">拒绝</button>
+			  </div>
               {% endfor %}
-              </tbody>
-          </table>
-          <div>
-      </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
             </div>

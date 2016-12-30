@@ -19,11 +19,13 @@
 	</div>
 	<div class="section">
 		<div class="homepage_intro">
-			<h3 >欢迎使用Mynager</h3>
+			<h3>欢迎使用Mynager</h3>
 			<p>通过Mynager：</p>
 			<p>作为活动发布方你可以发布会议活动并邀请用户参加或者接受用户报名</p>
 			<p>作为活动参与者你可以接受会议活动邀请或者报名参加</p>
+			<p>扫描右侧二维码关注微信号享用更多服务</p>
 		</div>
+		<img class="hp_2Dcode" src="/img/temp.png">
 		<div class="clear"></div>
 		<div class="line" id="showbutton"></div>
 	</div>
@@ -40,7 +42,7 @@
     <div class="carousel-inner">
         {% for meet in showmeets %}
             <div class="item {% if meet == showmeets[0] %} active {% endif %} nomargin">
-                <img style="height: 500px; width: 960px" src="{{ meet.pic_url }}">
+                <a href='/meeting/detail?id={{ meet.id }}'><img style="height: 500px; width: 960px" src="{{ meet.pic_url }}"></a>
                 <div class="carousel-caption">{{ meet.name }}</div>
             </div>
         {% endfor %}
@@ -65,7 +67,7 @@
     {% for meet in meetings %}
     <div class="search_block">
       <img class="search_img" src="{{ meet.pic_url }}">
-      <div class="search_name"><p>{{ meet.name }}{{ meet.status }}</p></div>
+      <div class="search_name"><p>{{ meet.name }}</p></div>
       <div class="search_intro"><p>{{ meet.description }}</p></div>
       <div class="btn-group item_btn">
         <button type="button" class="btn btn-default" onclick="window.open('/meeting/detail?id={{ meet.id }}')">查看详情</button>
