@@ -119,8 +119,8 @@
 <script type="text/template" id="tpl-showbutton">
   <input class="line_member btn btn-default" type="button" value="注册新账号" onclick="window.location.href='/user/register'"/>
   {% if user_type == 3 %}
-      <input class="line_member btn btn-default" type="button" value="会议管理" onclick="window.location.href='/admin/meeting'"/>
-      <input class="line_member btn btn-default" type="button" value="用户管理" onclick="window.location.href='/admin/user'"/>
+      <input class="line_member btn btn-default" type="button" value="会议管理" onclick="window.location.href='/adm/meeting'"/>
+      <input class="line_member btn btn-default" type="button" value="用户管理" onclick="window.location.href='/adm/user'"/>
   {% elif user_type == 2 %}
       <input class="line_member btn btn-default" type="button" value="进入发布方界面" onclick="window.location.href='/publisher/meetings'"/>
       <input class="line_member btn btn-default" type="button" value="申请新会议" onclick="window.open('/meeting/conference')"/>

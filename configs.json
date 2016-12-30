@@ -1,6 +1,6 @@
 {
   "SECRET_KEY": "ThisIsARandomStringWithLength=50!-----------------",
-  "DEBUG": true,
+  "DEBUG": false,
   "IGNORE_WECHAT_SIGNATURE": false,
   "WECHAT_TOKEN": "ThisIsAWeChatTokenWhichCanBeARandomString",
   "WECHAT_APPID": "wxdabd06386fa2c4b6",
