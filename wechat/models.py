@@ -32,8 +32,10 @@ class MyUser(models.Model):
 
     @classmethod
     def create_admin(cls):
-        q, isCreated = User.objects.get_or_create(username="newAdmin", password = "123456")
-        if(isCreated):
+        q, isCreated = User.objects.get_or_create(username="newAdmin")
+        q.set_password("123456")
+        q.save()
+        if(not isCreated):
             return
         u = MyUser(user=q, user_type = MyUser.USER_ADMIN)
         u.name = "管理员"

@@ -10,5 +10,5 @@
   "DB_PASS": "525800",
   "DB_HOST": "127.0.0.1",
   "DB_PORT": "3306",
-  "SITE_DOMAIN": "http://183.172.153.11"
+  "SITE_DOMAIN": "http://139.196.113.225"
 }

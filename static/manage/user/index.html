@@ -51,7 +51,7 @@
             <div class="item_intro"><p>{{ user.description }}</p></div>
             <div class="item_note"><p>{% if user.user_type == 3 %}管理员{% elif user.user_type == 2 %}发布方{% else %}普通用户{% endif %}</p></div>
         <div class="btn-group item_btn">
-            <button type="button" class="btn btn-default" onclick="window.open('/admin/detail?id={{ user.id }}')">查看详情</button>
+           <button type="button" class="btn btn-default" onclick="window.open('/manage/detail?id={{ user.id }}')">查看详情</button>
             <button type="button" class="btn btn-default" onclick="DelUser({{ user.id }})">删除</button>
         </div>
         <div class="clear"></div>

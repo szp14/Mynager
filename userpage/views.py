@@ -11,6 +11,28 @@ from urllib import request
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from Mynager.settings import MEDIA_ROOT, SITE_DOMAIN
+from wechat.wrapper import WeChatLib
+from Mynager.settings import WECHAT_TOKEN, WECHAT_APPID, WECHAT_SECRET
+
+def createNotice(user_openid, con):
+    jsonPacket = {
+        'touser': user_openid,
+        'template_id': 'kbtmtmz1uqzQO-2DhGbasz9OjSjGYujg-R2U_rGbITg',
+        'topcolor': '#FF0000',
+        #'url': SITE_DOMAIN + '/meeting/detail?id=' + str(metId),
+        'data': {
+            'con': {
+                'value': con,
+                'color': '#FF0000',
+            },
+        },
+    }
+    lib = WeChatLib(WECHAT_TOKEN, WECHAT_APPID, WECHAT_SECRET)
+    token = lib.get_wechat_access_token()
+    rsp = lib._http_post_dict(
+        'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=' + token,
+        jsonPacket
+    )
 
 class MeetingListView(APIView):
     def get(self):
@@ -443,6 +465,8 @@ class ParticipantManageView(APIView):
             "relation": Relation.GetRelation(user.id, meet)
         }for user in users if user.name.find(key) > -1 or user.description.find(key) > -1]
         return data
+
+
 
 class CreateNoticeView(APIView):
     @login_required
