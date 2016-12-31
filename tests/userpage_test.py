@@ -138,7 +138,6 @@ class Test_meetings(LiveServerTestCase):
         meetinglist1 = self.browser.find_elements_by_class_name('item_name')
         meetinglist3 = self.browser.find_elements_by_class_name('item_intro')
         self.assertTrue(len(meetinglist1) == 1 and meetinglist1[0].text == 'Do' and meetinglist3[0].text == '233')
-        self.browser.get_screenshot_as_file('dfgsfgsdfgsdgsfgs')
         self.browser.find_elements_by_class_name('btn')[0].click()
         mwindows1 = self.browser.window_handles
         self.browser.switch_to_window(mwindows1[2])
